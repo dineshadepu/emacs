@@ -1,0 +1,17 @@
+* Keyboard settings
+** Hash key problem Mac os 
+   If Mac is using British type keyboard, typing Shift-3 will be £ instead of #.
+   #+BEGIN_SRC emacs-lisp
+     ;; Allow hash to be entered  
+     (global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#")))
+   #+END_SRC
+   
+
+* Org mode
+** Org bullets
+   #+BEGIN_SRC emacs-lisp
+     (use-package org-bullets
+       :ensure t
+       :config
+       (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+   #+END_SRC
