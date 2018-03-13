@@ -328,10 +328,19 @@
        (diminish 'hungru-delete-mode)
        (diminish 'beacon-mode)
        (diminish 'rainbow-mode)
+       (diminish 'flycheck-mode)
+       (diminish 'yas-mode)
+       (diminish 'auto-revert-mode)
+       (diminish 'undo-tree-mode)
+       (diminish 'company-mode)
        (diminish 'which-key-mode))
    #+END_SRC
 
+   #+RESULTS:
+
 * auto-completion
+  
+** company setup with c++
   #+BEGIN_SRC emacs-lisp
     (use-package company
       :ensure t
@@ -339,23 +348,151 @@
       (add-hook 'after-init-hook 'global-company-mode)
       :config
       (setq company-minimum-prefix-length 1)
+      (setq company-idle-delay 0)
       ) 
+    (with-eval-after-load 'company
+      (define-key company-active-map (kbd "C-n") #'company-select-next)
+      (define-key company-active-map (kbd "C-p") #'company-select-previous)
+      )
+
+    (use-package company-irony
+      :ensure t
+      :config
+      (require 'company)
+      (add-to-list 'company-backends 'company-irony))
+
+    (use-package irony
+      :ensure t
+      :config
+      (add-hook 'c++-mode-hook 'irony-mode)
+      (add-hook 'c-mode-hook 'irony-mode)
+      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+    (with-eval-after-load 'company
+      (add-hook 'c++-mode-hook 'company-mode)
+      (add-hook 'c-mode-hook 'company-mode))
   #+END_SRC
+   
+** company statistics
+   #+BEGIN_SRC emacs-lisp
+     (use-package company-statistics
+       :ensure t
+       :config
+       (company-statistics-mode))
+   #+END_SRC
+  
+   
+* rust language
+#+BEGIN_SRC emacs-lisp
+  (use-package rust-mode
+    :ensure t
+    :diminish t)
+
+  (use-package racer
+    :ensure t
+    :diminish t
+    :bind
+    (:map evil-normal-state-map
+          ("M-." .  racer-find-definition)
+          )
+    :config
+    (add-hook 'rust-mode-hook #'racer-mode)
+    (add-hook 'racer-mode-hook #'eldoc-mode))
+
+  (setq racer-cmd "~/.cargo/bin/racer")
+  (setq racer-rust-src-path "~/.multirust/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src")
+
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'racer-mode-hook #'eldoc-mode)
+  (add-hook 'racer-mode-hook #'company-mode)
+
+  (require 'rust-mode)
+  (define-key rust-mode-map (kbd "TAB")  #'company-indent-or-complete-common)
+  (setq company-tooltip-align-annotations t)
+
+
+
+  (use-package flycheck-rust
+    :ensure t
+    :defer t
+    :init (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+  (use-package flycheck-package
+    :ensure t
+    :init (with-eval-after-load 'flycheck (flycheck-package-setup)))
+
+  (use-package toml-mode
+    :ensure t)
+
+  (use-package clang-format
+    :ensure t)
+
+  (use-package cargo
+    :ensure t
+    :diminish t)
+  (add-hook 'rust-mode-hook 'cargo-minor-mode)
+
+  (use-package rg
+    :ensure t
+    :diminish t)
+
+  ;; snippets
+  ;; (add-to-list 'load-path "/home/dinesh/.emacs.d/elpa/rust-snippets/")
+  ;; (autoload 'rust-snippets/initialize "rust-snippets")
+  ;; (eval-after-load 'yasnippet
+  ;;   '(rust-snippets/initialize))
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Rust ends
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#+END_SRC
 
   
- # * dmenu
-#+BEGIN_SRC emacs-lisp
-  (use-package dmenu
-    :ensure t
-    :bind
-    ("C-x <space>" . 'dmenu))
-#+END_SRC
+* Yasnippet
+  #+BEGIN_SRC emacs-lisp
+    (use-package yasnippet
+      :ensure t
+      :init
+      (yas-global-mode 1)
+      :config
+      (use-package yasnippet-snippets
+        :ensure t)
+      (yas-reload-all))
 
-# * symon
+    ;; Add yasnippet support for all company backends
+    ;; https://github.com/syl20bnr/spacemacs/pull/179
+    (defvar company-mode/enable-yas t
+      "Enable yasnippet for all backends.")
+
+    (defun company-mode/backend-with-yas (backend)
+      (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+          backend
+        (append (if (consp backend) backend (list backend))
+                '(:with company-yasnippet))))
+
+    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+  #+END_SRC
+
+
+  
+* flycheck
+  #+BEGIN_SRC emacs-lisp
+    (use-package flycheck
+      :ensure t
+      :init
+      (global-flycheck-mode t))
+  #+END_SRC
+  
+
+* path from shell
 #+BEGIN_SRC emacs-lisp
-  (use-package symon
+  (use-package exec-path-from-shell
     :ensure t
-    :bind
-    ("C-x s" . symon-mode))
+    ;; :load-path "~/.emacs.d/elisp/exec-path-from-shell/"
+    :config
+    (push "HISTFILE" exec-path-from-shell-variables)
+    (setq exec-path-from-shell-check-startup-files nil)
+    (exec-path-from-shell-initialize))
 #+END_SRC
- 
