@@ -31,9 +31,9 @@
 
       (setq ring-bell-function 'ignore)
 
-      (when window-system (global-hl-line-mode t))
-
       (global-prettify-symbols-mode t)
+
+      (setf cursor-type 'bar)
 
       ;; Electric auto pair
       (electric-pair-mode t)
@@ -810,4 +810,27 @@
 
   (add-hook 'shell-mode-hook 'my-shell-hook)
   (add-hook 'eshell-mode-hook (lambda() (company-mode 0)))
+#+END_SRC
+
+* elpy
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    ;; :load-path "~/.emacs.d/elisp/elpy/"
+    :ensure t
+    :diminish elpy-mode
+    :config(progn
+	     ;; (setq elpy-rpc-python-command "python3")
+	     ;; (setq 'python-indent-offset 4)
+	     (setq company-minimum-prefix-length 1)
+	     (setq python-shell-completion-native-enable nil)
+	     (setq elpy-rpc-timeout 10)
+	     (setq elpy-rpc-backend "jedi")
+	     ;; (elpy-use-ipython)
+	     ;; (elpy-clean-modeline)
+	     (elpy-enable)))
+  (use-package virtualenv
+    :ensure)
+  (let ((virtualenv-workon-starts-python nil))
+    (virtualenv-workon "sph"))
+  (delete `elpy-module-highlight-indentation elpy-modules)
 #+END_SRC
