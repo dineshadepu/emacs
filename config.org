@@ -403,56 +403,56 @@
 * rust language
 #+BEGIN_SRC emacs-lisp
   (use-package rust-mode
-    :ensure t
-    :diminish t)
+  :ensure t
+  :diminish t)
 
-  (use-package racer
-    :ensure t
-    :diminish t
-    :bind
-    (:map evil-normal-state-map
-          ("M-." .  racer-find-definition)
-          )
-    :config
-    (add-hook 'rust-mode-hook #'racer-mode)
-    (add-hook 'racer-mode-hook #'eldoc-mode))
+  ;; (use-package racer
+  ;; :ensure t
+  ;; :diminish t
+  ;; :bind
+  ;; (:map evil-normal-state-map
+  ;; 	("M-." .  racer-find-definition)
+  ;; 	)
+  ;; :config
+  ;; (add-hook 'rust-mode-hook #'racer-mode)
+  ;; (add-hook 'racer-mode-hook #'eldoc-mode))
 
-  (setq racer-cmd "~/.cargo/bin/racer")
-  (setq racer-rust-src-path "~/.multirust/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src")
+  ;; (setq racer-cmd "~/.cargo/bin/racer")
+  ;; (setq racer-rust-src-path "~/.multirust/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src")
 
-  (add-hook 'rust-mode-hook #'racer-mode)
-  (add-hook 'racer-mode-hook #'eldoc-mode)
-  (add-hook 'racer-mode-hook #'company-mode)
+  ;; (add-hook 'rust-mode-hook #'racer-mode)
+  ;; (add-hook 'racer-mode-hook #'eldoc-mode)
+  ;; (add-hook 'racer-mode-hook #'company-mode)
 
-  (require 'rust-mode)
-  (define-key rust-mode-map (kbd "TAB")  #'company-indent-or-complete-common)
-  (setq company-tooltip-align-annotations t)
+  ;; (require 'rust-mode)
+  ;; (define-key rust-mode-map (kbd "TAB")  #'company-indent-or-complete-common)
+  ;; (setq company-tooltip-align-annotations t)
 
 
 
   (use-package flycheck-rust
-    :ensure t
-    :defer t
-    :init (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+  :ensure t
+  :defer t
+  :init (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
   (use-package flycheck-package
-    :ensure t
-    :init (with-eval-after-load 'flycheck (flycheck-package-setup)))
+  :ensure t
+  :init (with-eval-after-load 'flycheck (flycheck-package-setup)))
 
   (use-package toml-mode
-    :ensure t)
+  :ensure t)
 
   (use-package clang-format
-    :ensure t)
+  :ensure t)
 
   (use-package cargo
-    :ensure t
-    :diminish t)
+  :ensure t
+  :diminish t)
   (add-hook 'rust-mode-hook 'cargo-minor-mode)
 
   (use-package rg
-    :ensure t
-    :diminish t)
+  :ensure t
+  :diminish t)
 
   ;; snippets
   ;; (add-to-list 'load-path "/home/dinesh/.emacs.d/elpa/rust-snippets/")
@@ -553,135 +553,115 @@
 
 * org-ref
 #+BEGIN_SRC emacs-lisp
-  (use-package org-ref
-    :after org
-    :init
-    (setq reftex-default-bibliography '("~/Dropbox/Research/references.bib"))
-    (setq org-ref-bibliography-notes "~/Dropbox/Research/notes/notes.org"
-          org-ref-default-bibliography '("~/Dropbox/Research/references.bib")
-          org-ref-pdf-directory "~/Dropbox/papers/")
+  ;; (use-package org-ref
+  ;;   :after org
+  ;;   :init
+  ;;   (setq reftex-default-bibliography '("~/Dropbox/Research/references.bib"))
+  ;;   (setq org-ref-bibliography-notes "~/Dropbox/Research/notes/notes.org"
+  ;;         org-ref-default-bibliography '("~/Dropbox/Research/references.bib")
+  ;;         org-ref-pdf-directory "~/Dropbox/papers/")
 
-    (setq helm-bibtex-bibliography "~/Dropbox/Research/references.bib")
-    (setq helm-bibtex-library-path "~/Dropbox/papers/")
+  ;;   (setq helm-bibtex-bibliography "~/Dropbox/Research/references.bib")
+  ;;   (setq helm-bibtex-library-path "~/Dropbox/papers/")
 
-    (setq helm-bibtex-pdf-open-function
-          (lambda (fpath)
-            (start-process "open" "*open*" "open" fpath)))
+  ;;   (setq helm-bibtex-pdf-open-function
+  ;;         (lambda (fpath)
+  ;;           (start-process "open" "*open*" "open" fpath)))
 
-    (setq helm-bibtex-notes-path "~/Dropbox/Research/notes/notes.org")
-    :config
-    ;; variables that control bibtex key format for auto-generation
-    ;; I want firstauthor-year-title-words
-    ;; this usually makes a legitimate filename to store pdfs under.
-    (setq bibtex-autokey-year-length 4
-          bibtex-autokey-name-year-separator "-"
-          bibtex-autokey-year-title-separator "-"
-          bibtex-autokey-titleword-separator "-"
-          bibtex-autokey-titlewords 2
-          bibtex-autokey-titlewords-stretch 1
-          bibtex-autokey-titleword-length 5))
+  ;;   (setq helm-bibtex-notes-path "~/Dropbox/Research/notes/notes.org")
+  ;;   :config
+  ;;   ;; variables that control bibtex key format for auto-generation
+  ;;   ;; I want firstauthor-year-title-words
+  ;;   ;; this usually makes a legitimate filename to store pdfs under.
+  ;;   (setq bibtex-autokey-year-length 4
+  ;;         bibtex-autokey-name-year-separator "-"
+  ;;         bibtex-autokey-year-title-separator "-"
+  ;;         bibtex-autokey-titleword-separator "-"
+  ;;         bibtex-autokey-titlewords 2
+  ;;         bibtex-autokey-titlewords-stretch 1
+  ;;         bibtex-autokey-titleword-length 5))
 
-  ;; (setq org-ref-default-ref-type "eqref")
-  ;; (org-defkey org-mode-map ["C-c M-x"] 'org-ref-helm-insert-ref-link)
+  ;; ;; (setq org-ref-default-ref-type "eqref")
+  ;; ;; (org-defkey org-mode-map ["C-c M-x"] 'org-ref-helm-insert-ref-link)
 
-  (use-package doi-utils
-    :after org)
+  ;; (use-package doi-utils
+  ;;   :after org)
 
-  (use-package org-ref-bibtex
-    :after org)
-
-
-  ;; The following lines are always needed.  Choose your own keys.
-  (global-set-key "\C-cl" 'org-store-link)
-  (global-set-key "\C-ca" 'org-agenda)
-  (global-set-key "\C-cc" 'org-capture)
-  (global-set-key "\C-cb" 'org-iswitchb)
+  ;; (use-package org-ref-bibtex
+  ;;   :after org)
 
 
-  (use-package ox-reveal
-    :ensure ox-reveal)
-
-  (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
-  (setq org-reveal-mathjax t)
-
-  (plist-put org-format-latex-options :scale 1.5)
-
-  (add-to-list 'org-latex-packages-alist
-               '("" "tikz" t))
-  (setq org-export-latex-hyperref-format "\\ref{%s}")
-
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '(
-     (shell . t)
-     (python . t)
-     (ditaa . t)
-     (latex . t)
-     (C . t)
-     ))
-
-  ;; don't ask for security
-  (defun my-org-confirm-babel-evaluate (lang body)
-    (not (member lang '("python" "latex" "sh" ))))
-
-  (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
-
-  (eval-after-load "org"
-    '(progn
-       ;; .txt files aren't in the list initially, but in case that changes
-       ;; in a future version of org, use if to avoid errors
-       (if (assoc "\\.txt\\'" org-file-apps)
-           (setcdr (assoc "\\.txt\\'" org-file-apps) "notepad.exe %s")
-         (add-to-list 'org-file-apps '("\\.txt\\'" . "notepad.exe %s") t))
-       ;; Change .pdf association directly within the alist
-       (setcdr (assoc "\\.pdf\\'" org-file-apps) "evince %s")))
-
-  (setq org-latex-listings 'minted
-        org-latex-packages-alist '(("" "minted"))
-        org-latex-pdf-process
-        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  ;; ;; The following lines are always needed.  Choose your own keys.
+  ;; (global-set-key "\C-cl" 'org-store-link)
+  ;; (global-set-key "\C-ca" 'org-agenda)
+  ;; (global-set-key "\C-cc" 'org-capture)
+  ;; (global-set-key "\C-cb" 'org-iswitchb)
 
 
-  ;; (setq org-confirm-babel-evaluate nil)   ;don't prompt me to confirm everytime I want to evaluate a block
+  ;; (use-package ox-reveal
+  ;;   :ensure ox-reveal)
 
-  ;;; display/update images in the buffer after I evaluate
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+  ;; (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+  ;; (setq org-reveal-mathjax t)
 
-  (setq org-latex-to-pdf-process (list "latexmk -pdf %f"))
-  (use-package htmlize
-    :commands (htmlize-buffer
-               htmlize-file
-               htmlize-many-files
-               htmlize-many-files-dired
-               htmlize-region))
+  ;; (plist-put org-format-latex-options :scale 1.5)
+
+  ;; (add-to-list 'org-latex-packages-alist
+  ;;              '("" "tikz" t))
+  ;; (setq org-export-latex-hyperref-format "\\ref{%s}")
+
+  ;; (org-babel-do-load-languages
+  ;;  'org-babel-load-languages
+  ;;  '(
+  ;;    (shell . t)
+  ;;    (python . t)
+  ;;    (ditaa . t)
+  ;;    (latex . t)
+  ;;    (C . t)
+  ;;    ))
+
+  ;; ;; don't ask for security
+  ;; (defun my-org-confirm-babel-evaluate (lang body)
+  ;;   (not (member lang '("python" "latex" "sh" ))))
+
+  ;; (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
 
-  ;; org mode lateX export with reference
-  (setq org-latex-pdf-process '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
-
-  ;; cdlatex mode on
-  ;; (use-package cdlatex
-  ;;   :ensure t)
-  ;; (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+  ;; (setq org-latex-listings 'minted
+  ;;       org-latex-packages-alist '(("" "minted"))
+  ;;       org-latex-pdf-process
+  ;;       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+  ;;         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 
-  ;; org latex classes
-  (with-eval-after-load 'ox-latex
-    (add-to-list 'org-latex-classes
-                 '("report"
-                   "\\documentclass{report}"
-                   ("\\chapter{%s}" . "\\chapter*{%s}")
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+  ;; ;; (setq org-confirm-babel-evaluate nil)   ;don't prompt me to confirm everytime I want to evaluate a block
 
+  ;; ;;; display/update images in the buffer after I evaluate
+  ;; (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+
+  ;; (setq org-latex-to-pdf-process (list "latexmk -pdf %f"))
+  ;; (use-package htmlize
+  ;;   :commands (htmlize-buffer
+  ;;              htmlize-file
+  ;;              htmlize-many-files
+  ;;              htmlize-many-files-dired
+  ;;              htmlize-region))
+
+
+  ;; ;; org mode lateX export with reference
+  ;; (setq org-latex-pdf-process '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
+
+  ;; ;; cdlatex mode on
+  ;; ;; (use-package cdlatex
+  ;; ;;   :ensure t)
+  ;; ;; (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+
+
+  ;; ;; org latex classes
   ;; (with-eval-after-load 'ox-latex
   ;;   (add-to-list 'org-latex-classes
-  ;;                '("phd"
-  ;;                  "\\documentclass{iitbreport}"
+  ;;                '("report"
+  ;;                  "\\documentclass{report}"
   ;;                  ("\\chapter{%s}" . "\\chapter*{%s}")
   ;;                  ("\\section{%s}" . "\\section*{%s}")
   ;;                  ("\\subsection{%s}" . "\\subsection*{%s}")
@@ -689,63 +669,54 @@
   ;;                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
   ;;                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
-  (with-eval-after-load 'ox-latex
-    (add-to-list 'org-latex-classes
-                 '("article"
-                   "\\documentclass{myarticle} "
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
-  (add-to-list 'org-latex-classes
-               '("iitbreport"
-                 "\\documentclass{iitbreport} "
-                 ("\\chapter{%s}" . "\\chapter*{%s}")
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  ;; (add-to-list 'org-latex-classes
+  ;;              '("iitbreport"
+  ;;                "\\documentclass{iitbreport} "
+  ;;                ("\\chapter{%s}" . "\\chapter*{%s}")
+  ;;                ("\\section{%s}" . "\\section*{%s}")
+  ;;                ("\\subsection{%s}" . "\\subsection*{%s}")
+  ;;                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+  ;;                ("\\paragraph{%s}" . "\\paragraph*{%s}")
+  ;;                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
-  (add-to-list 'org-latex-classes
-               '("asme2ej"
-                 "\\documentclass{asme2ej} "
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-  (setq org-export-latex-hyperref-format "\\ref{%s}")
+  ;; (add-to-list 'org-latex-classes
+  ;;              '("asme2ej"
+  ;;                "\\documentclass{asme2ej} "
+  ;;                ("\\section{%s}" . "\\section*{%s}")
+  ;;                ("\\subsection{%s}" . "\\subsection*{%s}")
+  ;;                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+  ;;                ("\\paragraph{%s}" . "\\paragraph*{%s}")
+  ;;                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  ;; (setq org-export-latex-hyperref-format "\\ref{%s}")
 
 
-  (add-to-list 'org-latex-classes
-               '("koma-article"
-                 "\\documentclass{scrartcl}"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-  ;; (setq org-ref-completion-library 'org-ref-ivy-cite)
+  ;; (add-to-list 'org-latex-classes
+  ;;              '("koma-article"
+  ;;                "\\documentclass{scrartcl}"
+  ;;                ("\\section{%s}" . "\\section*{%s}")
+  ;;                ("\\subsection{%s}" . "\\subsection*{%s}")
+  ;;                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+  ;;                ("\\paragraph{%s}" . "\\paragraph*{%s}")
+  ;;                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  ;; ;; (setq org-ref-completion-library 'org-ref-ivy-cite)
 
 
-  (setq org-clock-persist 'history)
-  (org-clock-persistence-insinuate)
+  ;; (setq org-clock-persist 'history)
+  ;; (org-clock-persistence-insinuate)
 
-  ;; Latex scripts highlight
-  (setq org-highlight-latex-and-related '(latex))
+  ;; ;; Latex scripts highlight
+  ;; (setq org-highlight-latex-and-related '(latex))
 
-  ;; mode specific keys. Org refer a name and label keys shadowing
-  (add-hook 'org-mode-hook ;; guessing
-            '(lambda ()
-               (local-set-key "\C-cr" 'org-ref-helm-insert-ref-link)
-               (local-set-key "\C-ci" 'org-ref-helm-insert-label-link)))
+  ;; ;; mode specific keys. Org refer a name and label keys shadowing
+  ;; (add-hook 'org-mode-hook ;; guessing
+  ;;           '(lambda ()
+  ;;              (local-set-key "\C-cr" 'org-ref-helm-insert-ref-link)
+  ;;              (local-set-key "\C-ci" 'org-ref-helm-insert-label-link)))
 
-  ;; to get user preferred labels
-  (setq org-latex-prefer-user-labels t)
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; ;; to get user preferred labels
+  ;; (setq org-latex-prefer-user-labels t)
+  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #+END_SRC
 
 
