@@ -62,6 +62,8 @@
             (kill-buffer buffer))))
       (global-set-key (kbd "C-x L") 'kill-other-buffers)
 
+      ;; whitespace clean up mode
+      (add-hook 'before-save-hook 'whitespace-cleanup)
       (menu-bar-mode -1)
       (tool-bar-mode -1)
       (setq inhibit-startup-message t)
@@ -160,7 +162,7 @@
             (evil-leader/set-key "," 'elpy-goto-definition)
             (evil-leader/set-key "f" 'ff-find-other-file)
             (evil-leader/set-key "c" 'recentf-open-files)
-            (evil-leader/set-key "r" 'org-ref-helm-insert-ref-link)
+            (evil-leader/set-key "r" 'helm-bibtex)
             (evil-leader/set-key "l" 'org-ref-helm-insert-label-link)
             (evil-leader/set-key "w" 'ispell-word)
             (evil-leader/set-key "g" 'magit-status)
@@ -735,43 +737,81 @@
 
 * Latex
   #+BEGIN_SRC emacs-lisp
-    (use-package tex
+      (use-package tex
       :ensure auctex
       :config)
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq-default TeX-master nil)
+    (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    (setq reftex-plug-into-AUCTeX t)
+    (font-lock-add-keywords
+     'latex-mode
+     `((,(concat "^\\s-*\\\\\\("
+		 "\\(documentclass\\|\\(sub\\)?section[*]?\\)"
+		 "\\(\\[[^]% \t\n]*\\]\\)?{[-[:alnum:]_ ]+"
+		 "\\|"
+		 "\\(begin\\|end\\){document"
+		 "\\)}.*\n?")
+	(0 'your-face append))))
+
+    ;; master file settings
+    (setq-default TeX-master nil)
+    (setq-default TeX-master "master")
     ;; (setq TeX-show-compilation t)
 
-    (use-package company-auctex
-      :ensure t
-      :config
-      (company-auctex-init))
+    ;; get the bibliography
+    (setq reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource"))
+    '(reftex-use-external-file-finders t)
+    (eval-after-load 'helm-mode '(add-to-list
+				  'helm-completing-read-handlers-alist '(reftex-citation . nil) )
+		     )
+    (autoload 'helm-bibtex "helm-bibtex" "" t)
+    (setq bibtex-completion-bibliography
+	  '("~/Dropbox/Research/references.bib"
+	    ))
+    (setq bibtex-completion-library-path '("~/Dropbox/papers" "/path2/to/pdfs"))
+    (setq bibtex-completion-format-citation-functions
+	  '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+	    (latex-mode    . bibtex-completion-format-citation-cite)
+	    (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+	    (default       . bibtex-completion-format-citation-default)))
 
-    ;; From https://github.com/vspinu/company-math/issues/9
-    ;; settign up latex auto completion
-    (add-to-list 'company-backends 'company-math-symbols-unicode)
-    (defun my-latex-mode-setup ()
-      (setq-local company-backends
-		  (append '((company-math-symbols-latex company-latex-commands))
-			  company-backends)))
-    (add-hook 'tex-mode-hook 'my-latex-mode-setup)
 
-    ;; math symbols in latex
-    (use-package company-math
-      :ensure t)
+	(use-package company-auctex
+	  :ensure t
+	  :config
+	  (company-auctex-init))
 
-    (add-to-list 'company-backends 'company-math-symbols-unicode)
+	;; From https://github.com/vspinu/company-math/issues/9
+	;; settign up latex auto completion
+	(add-to-list 'company-backends 'company-math-symbols-unicode)
+	(defun my-latex-mode-setup ()
+	  (setq-local company-backends
+		      (append '((company-math-symbols-latex company-latex-commands))
+			      company-backends)))
+	(add-hook 'tex-mode-hook 'my-latex-mode-setup)
 
-    ;; Add yasnippet support for all company backends
-    ;; https://github.com/syl20bnr/spacemacs/pull/179
-    (defvar company-mode/enable-yas t
-    "Enable yasnippet for all backends.")
+	;; math symbols in latex
+	(use-package company-math
+	  :ensure t)
 
-    (defun company-mode/backend-with-yas (backend)
-    (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
-	backend
-	(append (if (consp backend) backend (list backend))
-		'(:with company-yasnippet))))
+	(add-to-list 'company-backends 'company-math-symbols-unicode)
+	;; Add yasnippet support for all company backends
+	;; https://github.com/syl20bnr/spacemacs/pull/179
+	(defvar company-mode/enable-yas t
+	"Enable yasnippet for all backends.")
 
-    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+	(defun company-mode/backend-with-yas (backend)
+	(if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+	    backend
+	    (append (if (consp backend) backend (list backend))
+		    '(:with company-yasnippet))))
+
+	(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
   #+END_SRC
 
 * eshell
