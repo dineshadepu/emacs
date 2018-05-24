@@ -39,6 +39,7 @@
       (electric-pair-mode t)
 
       (desktop-save-mode 1)
+       (setq column-number-mode t)
 
       ;; Bookmarks file in dropbox.
       (setq bookmark-default-file "~/Dropbox/common/emacs/bookmarks.bmk" bookmark-save-flag 1)
@@ -781,37 +782,39 @@
 	    (default       . bibtex-completion-format-citation-default)))
 
 
-	(use-package company-auctex
-	  :ensure t
-	  :config
-	  (company-auctex-init))
+    (use-package company-auctex
+      :ensure t
+      :config
+      (company-auctex-init))
 
-	;; From https://github.com/vspinu/company-math/issues/9
-	;; settign up latex auto completion
-	(add-to-list 'company-backends 'company-math-symbols-unicode)
-	(defun my-latex-mode-setup ()
-	  (setq-local company-backends
-		      (append '((company-math-symbols-latex company-latex-commands))
-			      company-backends)))
-	(add-hook 'tex-mode-hook 'my-latex-mode-setup)
+    ;; From https://github.com/vspinu/company-math/issues/9
+    ;; settign up latex auto completion
+    (add-to-list 'company-backends 'company-math-symbols-unicode)
+    (defun my-latex-mode-setup ()
+      (setq-local company-backends
+		  (append '((company-math-symbols-latex company-latex-commands))
+			  company-backends)))
+    (add-hook 'tex-mode-hook 'my-latex-mode-setup)
 
-	;; math symbols in latex
-	(use-package company-math
-	  :ensure t)
+    ;; math symbols in latex
+    (use-package company-math
+      :ensure t)
 
-	(add-to-list 'company-backends 'company-math-symbols-unicode)
-	;; Add yasnippet support for all company backends
-	;; https://github.com/syl20bnr/spacemacs/pull/179
-	(defvar company-mode/enable-yas t
-	"Enable yasnippet for all backends.")
+    (add-to-list 'company-backends 'company-math-symbols-unicode)
+    ;; Add yasnippet support for all company backends
+    ;; https://github.com/syl20bnr/spacemacs/pull/179
+    (defvar company-mode/enable-yas t
+      "Enable yasnippet for all backends.")
 
-	(defun company-mode/backend-with-yas (backend)
-	(if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
-	    backend
-	    (append (if (consp backend) backend (list backend))
-		    '(:with company-yasnippet))))
+    (defun company-mode/backend-with-yas (backend)
+      (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+	  backend
+	(append (if (consp backend) backend (list backend))
+		'(:with company-yasnippet))))
 
-	(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+    ;; for different cite types
+    (setq reftex-cite-format 'natbib)
   #+END_SRC
 
 * eshell
