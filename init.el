@@ -19,7 +19,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (company-reftex org-plus-contrib pyvenv virtualenv elpy yasnippet-snippets which-key use-package toml-mode symon spacemacs-theme spaceline smex rg restart-emacs rainbow-delimiters racer ox-reveal org-ref org-bullets monokai-theme monokai-alt-theme helm-swoop golden-ratio git-timemachine git-gutter flycheck-rust flycheck-package flx-ido exec-path-from-shell evil-terminal-cursor-changer evil-nerd-commenter evil-magit evil-leader evil-escape dmenu diminish dashboard csharp-mode company-statistics company-math company-irony company-auctex color-theme clang-format cargo beacon avy aggressive-indent))))
+    (edit-indirect markdown-mode company-reftex org-plus-contrib pyvenv virtualenv elpy yasnippet-snippets which-key use-package toml-mode symon spacemacs-theme spaceline smex rg restart-emacs rainbow-delimiters racer ox-reveal org-ref org-bullets monokai-theme monokai-alt-theme helm-swoop golden-ratio git-timemachine git-gutter flycheck-rust flycheck-package flx-ido exec-path-from-shell evil-terminal-cursor-changer evil-nerd-commenter evil-magit evil-leader evil-escape dmenu diminish dashboard csharp-mode company-statistics company-math company-irony company-auctex color-theme clang-format cargo beacon avy aggressive-indent))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

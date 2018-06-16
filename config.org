@@ -25,7 +25,7 @@
       (setq backup-inhibited t)
       (setq auto-save-default nil)
 
-      (setq scroll-conservatively 100)
+      ;; (setq scroll-conservatively 100)
 
       (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -50,17 +50,17 @@
 
       ;; kill all oher buffers
       (defun nuke-all-buffers ()
-        (interactive)
-        (mapcar 'kill-buffer (buffer-list))
-        (delete-other-windows))
+	(interactive)
+	(mapcar 'kill-buffer (buffer-list))
+	(delete-other-windows))
 
       (global-set-key (kbd "C-x K") 'nuke-all-buffers)
 
       (defun kill-other-buffers ()
-        (interactive)
-        (dolist (buffer (buffer-list))
-          (unless (or (eql buffer (current-buffer)) )
-            (kill-buffer buffer))))
+	(interactive)
+	(dolist (buffer (buffer-list))
+	  (unless (or (eql buffer (current-buffer)) )
+	    (kill-buffer buffer))))
       (global-set-key (kbd "C-x L") 'kill-other-buffers)
 
       ;; whitespace clean up mode
@@ -70,42 +70,42 @@
       (setq inhibit-startup-message t)
 
       (use-package which-key
-        :ensure t
-        :init
-        (which-key-mode))
+	:ensure t
+	:init
+	(which-key-mode))
 
       (use-package beacon
-        :ensure t
-        :init
-        (beacon-mode 1))
+	:ensure t
+	:init
+	(beacon-mode 1))
 
       (use-package restart-emacs
-        :ensure t
-        :bind (("C-x M-c" . restart-emacs)))
+	:ensure t
+	:bind (("C-x M-c" . restart-emacs)))
 
       (use-package rainbow-delimiters
-        :ensure t
-        :init
-        (progn
-          (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-          (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)))
+	:ensure t
+	:init
+	(progn
+	  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+	  (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)))
 
       (use-package aggressive-indent
-        :ensure t
-        :init (global-aggressive-indent-mode))
+	:ensure t
+	:init (global-aggressive-indent-mode))
 
       (use-package golden-ratio                 ; Auto resize windows
-        :ensure t
-        :diminish golden-ratio-mode
-        :config
-        (golden-ratio-mode 1)
-        (setq golden-ratio-auto-scale t)
-        (setq golden-ratio-extra-commands
-              (append golden-ratio-extra-commands
-                      '(evil-window-left
-                        evil-window-right
-                        evil-window-up
-                        evil-window-down))))
+	:ensure t
+	:diminish golden-ratio-mode
+	:config
+	(golden-ratio-mode 1)
+	(setq golden-ratio-auto-scale t)
+	(setq golden-ratio-extra-commands
+	      (append golden-ratio-extra-commands
+		      '(evil-window-left
+			evil-window-right
+			evil-window-up
+			evil-window-down))))
    #+END_SRC
 
 
@@ -848,3 +848,45 @@
     (virtualenv-workon "sph"))
   (delete `elpy-module-highlight-indentation elpy-modules)
 #+END_SRC
+
+* Dabbrev
+  #+begin_src emacs-lisp
+    (use-package abbrev
+      :defer t
+      :diminish abbrev-mode
+      :init
+      (dolist (hook '(prog-mode-hook
+		      emacs-lisp-mode-hook
+		      text-mode-hook))
+	(add-hook hook (lambda () (abbrev-mode 1)))))
+    (defun ispell-word-then-abbrev (p)
+      "Call `ispell-word'. Then create an abbrev for the correction made.
+    With prefix P, create local abbrev. Otherwise it will be global."
+      (interactive "P")
+      (let ((before (downcase (or (thing-at-point 'word) "")))
+	    after)
+	(call-interactively 'ispell-word)
+	(setq after (downcase (or (thing-at-point 'word) "")))
+	(unless (string= after before)
+	  (define-abbrev
+	    (if p local-abbrev-table global-abbrev-table) before after))
+	(message "\"%s\" now expands to \"%s\" %sally."
+		 before after (if p "loc" "glob"))))
+
+    (define-key ctl-x-map (kbd "C-i") 'ispell-word-then-abbrev)
+    (setq save-abbrevs t)
+    (setq-default abbrev-mode t)
+  #+end_src
+
+
+* Markdown
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package markdown-mode
+      :ensure t
+      :commands (markdown-mode gfm-mode)
+      :mode (("README\\.md\\'" . gfm-mode)
+	     ("\\.md\\'" . markdown-mode)
+	     ("\\.markdown\\'" . markdown-mode))
+      :init (setq markdown-command "multimarkdown"))
+  #+END_SRC
