@@ -1,0 +1,794 @@
+* General settings
+
+** Personal settings
+   Name, Email address while creating a document
+   #+BEGIN_SRC emacs-lisp
+     (require 'package)
+     (setq package-archives
+	   '(("melpa" . "https://melpa.org/packages/")
+	     ("gnu" . "https://elpa.gnu.org/packages/")
+	     ("org" . "http://orgmode.org/elpa/")))
+     (package-initialize)
+     (setq user-mail-address "adepu.dinesh.a@gmail.com")
+     (setq user-full-name "Dinesh A")
+   #+END_SRC
+
+** Common
+   #+BEGIN_SRC emacs-lisp
+     (setq-default fill-column 80)
+     (require 'whitespace)
+     (setq whitespace-style '(face empty tabs lines-tail trailing))
+     (add-hook 'before-save-hook 'delete-trailing-whitespace)
+     ;; (global-whitespace-mode t)
+     ;; (setq whitespace-line-column 80)
+     (setq make-backup-file nil)
+      (setq backup-inhibited t)
+      (setq auto-save-default nil)
+
+      ;; (setq scroll-conservatively 100)
+
+      (defalias 'yes-or-no-p 'y-or-n-p)
+
+      (setq ring-bell-function 'ignore)
+
+      (global-prettify-symbols-mode t)
+
+      (setf cursor-type 'bar)
+
+      ;; Electric auto pair
+      (electric-pair-mode t)
+
+      (desktop-save-mode 1)
+       (setq column-number-mode t)
+
+      ;; Bookmarks file in dropbox.
+      (setq bookmark-default-file "~/Dropbox/common/emacs/bookmarks.bmk" bookmark-save-flag 1)
+
+      ;; Copy to clipboard
+      (fset 'evil-visual-update-x-selection 'ignore)
+      (setq temporary-file-directory "~/.emacs.d/tmp/")
+
+      ;; kill all oher buffers
+      (defun nuke-all-buffers ()
+	(interactive)
+	(mapcar 'kill-buffer (buffer-list))
+	(delete-other-windows))
+
+      (global-set-key (kbd "C-x K") 'nuke-all-buffers)
+
+      (defun kill-other-buffers ()
+	(interactive)
+	(dolist (buffer (buffer-list))
+	  (unless (or (eql buffer (current-buffer)) )
+	    (kill-buffer buffer))))
+      (global-set-key (kbd "C-x L") 'kill-other-buffers)
+
+      ;; whitespace clean up mode
+      (add-hook 'before-save-hook 'whitespace-cleanup)
+      (menu-bar-mode -1)
+      (tool-bar-mode -1)
+      (setq inhibit-startup-message t)
+
+      (use-package which-key
+	:ensure t
+	:init
+	(which-key-mode))
+
+      (use-package beacon
+	:ensure t
+	:init
+	(beacon-mode 1))
+
+      (use-package restart-emacs
+	:ensure t
+	:bind (("C-x M-c" . restart-emacs)))
+
+      (use-package rainbow-delimiters
+	:ensure t
+	:init
+	(progn
+	  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+	  (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)))
+
+      (use-package aggressive-indent
+	:ensure t
+	:init (global-aggressive-indent-mode))
+
+      (use-package golden-ratio                 ; Auto resize windows
+	:ensure t
+	:diminish golden-ratio-mode
+	:config
+	(golden-ratio-mode 1)
+	(setq golden-ratio-auto-scale t)
+	(setq golden-ratio-extra-commands
+	      (append golden-ratio-extra-commands
+		      '(evil-window-left
+			evil-window-right
+			evil-window-up
+			evil-window-down))))
+   #+END_SRC
+
+
+** clock
+   #+BEGIN_SRC emacs-lisp
+     (setq display-time-24hr-format t)
+     (display-time-mode 1)
+   #+END_SRC
+
+
+* Vim emulator
+  Vim bindings for faster navigation
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :ensure t
+    :diminish evil
+    :init (evil-mode 1)
+    (setq evil-insert-state-cursor '((bar . 1) "white")
+	  evil-visual-state-cursor '(box "dark orange")
+	  evil-normal-state-cursor '(box "white"))
+    :bind (:map
+	   evil-insert-state-map
+	   ([S-left]     . windmove-left)
+	   ([S-right]    . windmove-right)
+	   ([S-up]     . windmove-up)
+	   ([S-down]    . windmove-down)
+	   ("SPC" . nil)
+	   :map
+	   evil-normal-state-map
+	   (";" . evil-ex)
+	   (":"   .       evil-repeat-find-char)
+	   :map    evil-motion-state-map
+	   ([S-left]     . windmove-left)
+	   ([S-right]    . windmove-right)
+	   ([S-up]     . windmove-up)
+	   ([S-down]    . windmove-down)
+	   ))
+  (with-eval-after-load 'evil
+    (define-key evil-normal-state-map (kbd "M-.") nil))
+
+
+  (use-package evil-leader
+    :ensure t
+    :diminish evil-leader
+    :init (global-evil-leader-mode)
+    :config (progn
+	      (evil-leader/set-leader ",")
+	      (evil-leader/set-key "b" 'switch-to-buffer)
+	      (evil-leader/set-key "s" 'save-buffer)
+	      (evil-leader/set-key "e" 'find-file)
+	      (evil-leader/set-key "1" 'delete-other-windows)
+	      (evil-leader/set-key "x" 'bookmark-jump)
+	      (evil-leader/set-key "0" 'delete-window)
+	      (evil-leader/set-key "3" 'split-window-right)
+	      (evil-leader/set-key "2" 'split-window-below)
+	      (evil-leader/set-key "." 'elpy-goto-definition-other-window)
+	      (evil-leader/set-key "," 'elpy-goto-definition)
+	      (evil-leader/set-key "f" 'ff-find-other-file)
+	      (evil-leader/set-key "c" 'recentf-open-files)
+	      (evil-leader/set-key "r" 'helm-bibtex)
+	      (evil-leader/set-key "l" 'org-ref-helm-insert-label-link)
+	      (evil-leader/set-key "w" 'ispell-word)
+	      (evil-leader/set-key "g" 'magit-status)
+	      (evil-leader/set-key "z" 'fzf)
+	      (evil-leader/set-key "n" 'windmove-left)
+	      (evil-leader/set-key "m" 'windmove-right)
+	      (evil-leader/set-key "<SPC>" 'windmove-down)
+	      (evil-leader/set-key "p" 'windmove-up)
+	      (evil-leader/set-key "o" 'org-ref-open-bibtex-notes)
+	      (evil-leader/set-key "`" 'org-edit-src-exit)
+	      (evil-leader/set-key "u" 'org-ref-open-pdf-at-point)
+	      (evil-leader/set-key "k" 'kill-this-buffer)))
+
+  (use-package key-chord
+    :ensure t)
+  (require 'key-chord)
+  (key-chord-mode 1)
+  (key-chord-define evil-insert-state-map  "jk" 'evil-normal-state)
+
+  ;; evil cursor terminal
+  (use-package evil-terminal-cursor-changer
+    :ensure t)
+  (unless (display-graphic-p)
+    (require 'evil-terminal-cursor-changer)
+    (evil-terminal-cursor-changer-activate) ; or (etcc-on)
+    )
+
+
+  (setq evil-motion-state-cursor 'box)  ; █
+  (setq evil-visual-state-cursor 'box)  ; █
+  (setq evil-normal-state-cursor 'box)  ; █
+  (setq evil-insert-state-cursor 'bar)  ; ⎸
+  (setq evil-emacs-state-cursor  'hbar) ; _
+
+  ;;; esc quits
+  (defun minibuffer-keyboard-quit ()
+    "Abort recursive edit.
+    In Delete Selection mode, if the mark is active, just deactivate it;
+    then it takes a second \\[keyboard-quit] to abort the minibuffer."
+    (interactive)
+    (if (and delete-selection-mode transient-mark-mode mark-active)
+	(setq deactivate-mark  t)
+      (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+      (abort-recursive-edit)))
+  (define-key evil-normal-state-map [escape] 'keyboard-quit)
+  (define-key evil-visual-state-map [escape] 'keyboard-quit)
+  (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+#+END_SRC
+
+
+
+* Keyboard settings
+** Hash key problem Mac os
+   If Mac is using British type keyboard, typing Shift-3 will be £ instead of #.
+   #+BEGIN_SRC emacs-lisp
+     ;; Allow hash to be entered
+     (global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#")))
+   #+END_SRC
+
+
+* Org mode
+** Basic config
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'org-structure-template-alist
+		  '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+     (define-key global-map "\C-cl" 'org-store-link)
+     (define-key global-map "\C-ca" 'org-agenda)
+     (setq org-log-done t)
+
+     (setq org-agenda-files (list "~/org/phd.org"
+				  "~/org/dem.org"
+				  "~/org/rust.org"
+				  "~/org/java.org"
+				  "~/org/books.org"))
+   #+END_SRC
+
+** Org bullets
+   #+BEGIN_SRC emacs-lisp
+     (use-package org-bullets
+       :ensure t
+       :config
+       (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+   #+END_SRC
+
+** Org agenda
+
+* IDO mode
+
+** Enable Ido mode
+   #+BEGIN_SRC emacs-lisp
+     (use-package ido
+       :ensure t
+       :config(progn
+		(setq ido-enable-flex-matching t)
+		(setq ido-everywhere t)
+		(ido-mode 1)))
+
+
+     (use-package flx-ido
+       :ensure t
+       :init
+       (progn
+	 (setq gc-cons-threshold (* 20 (expt 2 20)) ; megabytes
+	       ido-use-faces nil))
+       :config
+       (flx-ido-mode 1))
+     (setq ido-enable-flex-matching nil)
+     (setq ido-create-new-buffer 'always)
+     (setq ido-everywhere t)
+     (ido-mode 1)
+   #+END_SRC
+
+   #+RESULTS:
+   : t
+
+
+** smex
+   #+BEGIN_SRC emacs-lisp
+     (use-package smex
+       :ensure t
+       :init (smex-initialize)
+       :bind
+       ("M-x" . smex))
+   #+END_SRC
+
+
+
+* Git for version control
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package magit
+      :ensure t)
+    (global-auto-revert-mode t)
+    (use-package git-gutter
+      :ensure t
+      :init
+      )
+    (global-git-gutter-mode 0)
+    ;; disable evil in timemachine
+    ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
+    (eval-after-load 'git-timemachine
+      '(progn
+	 (evil-make-overriding-map git-timemachine-mode-map 'normal)
+	 ;; force update evil keymaps after git-timemachine-mode loaded
+	 (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps)))
+
+    (use-package git-timemachine
+      :ensure t
+      )
+
+    (use-package evil-magit
+      :ensure t)
+  #+END_SRC
+
+* Dashboard
+  #+BEGIN_SRC emacs-lisp
+    (use-package dashboard
+      :ensure t
+      :config
+      (dashboard-setup-startup-hook)
+      (setq dashboard-items '((recents . 10)))
+      (setq dashboard-banner-logo-title "Hello Dinesh!, Have a good day")
+      )
+  #+END_SRC
+
+
+* mode-line
+
+** Theme
+#+BEGIN_SRC emacs-lisp
+  (use-package monokai-theme
+    :ensure t
+    :init
+    (load-theme 'monokai t))
+  ;; (use-package spaceline :ensure t
+  ;;   :config
+  ;;   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+
+  ;; (use-package spaceline-config :ensure spaceline
+  ;;   :config
+  ;;   (spaceline-helm-mode 1)
+  ;;   (spaceline-emacs-theme))
+#+END_SRC
+
+
+** diminish
+   #+BEGIN_SRC emacs-lisp
+     (use-package diminish
+       :ensure t
+       :init
+       (diminish 'hungru-delete-mode)
+       (diminish 'beacon-mode)
+       (diminish 'rainbow-mode)
+       (diminish 'flycheck-mode)
+       (diminish 'yas-mode)
+       (diminish 'auto-revert-mode)
+       (diminish 'undo-tree-mode)
+       (diminish 'company-mode)
+       (diminish 'which-key-mode))
+   #+END_SRC
+
+   #+RESULTS:
+
+* auto-completion
+
+** company setup with c++
+  #+BEGIN_SRC emacs-lisp
+    (use-package company
+      :ensure t
+      :init
+      (add-hook 'after-init-hook 'global-company-mode)
+      :config
+      (setq company-minimum-prefix-length 1)
+      (setq company-idle-delay 0)
+      )
+    (with-eval-after-load 'company
+      (define-key company-active-map (kbd "C-n") #'company-select-next)
+      (define-key company-active-map (kbd "C-p") #'company-select-previous)
+      )
+
+    (use-package company-irony
+      :ensure t
+      :config
+      (require 'company)
+      (add-to-list 'company-backends 'company-irony))
+
+    (use-package irony
+      :ensure t
+      :config
+      (add-hook 'c++-mode-hook 'irony-mode)
+      (add-hook 'c-mode-hook 'irony-mode)
+      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+    (with-eval-after-load 'company
+      (add-hook 'c++-mode-hook 'company-mode)
+      (add-hook 'c-mode-hook 'company-mode))
+  #+END_SRC
+
+** company statistics
+   #+BEGIN_SRC emacs-lisp
+     (use-package company-statistics
+       :ensure t
+       :config
+       (company-statistics-mode))
+   #+END_SRC
+
+
+* rust language
+#+BEGIN_SRC emacs-lisp
+  (use-package rust-mode
+    :ensure t
+    :diminish t)
+
+  ;; (use-package racer
+  ;; :ensure t
+  ;; :diminish t
+  ;; :bind
+  ;; (:map evil-normal-state-map
+  ;;       ("M-." .  racer-find-definition)
+  ;;       )
+  ;; :config
+  ;; (add-hook 'rust-mode-hook #'racer-mode)
+  ;; (add-hook 'racer-mode-hook #'eldoc-mode))
+
+  ;; (setq racer-cmd "~/.cargo/bin/racer")
+  ;; (setq racer-rust-src-path "~/.multirust/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
+
+  ;; (add-hook 'rust-mode-hook #'racer-mode)
+  ;; (add-hook 'racer-mode-hook #'eldoc-mode)
+  ;; (add-hook 'racer-mode-hook #'company-mode)
+
+  ;; (require 'rust-mode)
+  ;; (define-key rust-mode-map (kbd "TAB")  #'company-indent-or-complete-common)
+  ;; (setq company-tooltip-align-annotations t)
+
+
+
+  (use-package flycheck-rust
+    :ensure t
+    :defer t
+    :init (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+  (use-package flycheck-package
+  :ensure t
+  :init (with-eval-after-load 'flycheck (flycheck-package-setup)))
+
+  (use-package toml-mode
+  :ensure t)
+
+  (use-package clang-format
+  :ensure t)
+
+  (use-package cargo
+  :ensure t
+  :diminish t)
+  (add-hook 'rust-mode-hook 'cargo-minor-mode)
+
+  (use-package rg
+    :ensure t
+    :diminish t)
+
+  ;; snippets
+  (add-to-list 'load-path "/home/dinesh/.emacs.d/elpa/rust-snippets/")
+  (autoload 'rust-snippets/initialize "rust-snippets")
+  (eval-after-load 'yasnippet
+    '(rust-snippets/initialize))
+
+  (use-package rust-playground
+    :ensure t
+    :diminish t)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Rust ends
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#+END_SRC
+
+
+* Yasnippet
+  #+BEGIN_SRC emacs-lisp
+    (use-package yasnippet
+      :ensure t
+      :init
+      (yas-global-mode 1)
+      :config
+      (use-package yasnippet-snippets
+	:ensure t)
+      (yas-reload-all))
+
+    ;; Add yasnippet support for all company backends
+    ;; https://github.com/syl20bnr/spacemacs/pull/179
+    (defvar company-mode/enable-yas t
+      "Enable yasnippet for all backends.")
+
+    (defun company-mode/backend-with-yas (backend)
+      (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+	  backend
+	(append (if (consp backend) backend (list backend))
+		'(:with company-yasnippet))))
+
+    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+  #+END_SRC
+
+
+
+* flycheck
+  #+BEGIN_SRC emacs-lisp
+    (use-package flycheck
+      :ensure t
+      :init
+      (global-flycheck-mode t))
+  #+END_SRC
+
+
+* path from shell
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+    :ensure t
+    ;; :load-path "~/.emacs.d/elisp/exec-path-from-shell/"
+    :config
+    (push "HISTFILE" exec-path-from-shell-variables)
+    (setq exec-path-from-shell-check-startup-files nil)
+    (exec-path-from-shell-initialize))
+#+END_SRC
+
+
+* helm
+  #+BEGIN_SRC emacs-lisp
+    (use-package helm
+      :ensure t
+      :diminish helm-mode
+      :defer t
+      :bind (("C-x C-f" . helm-find-files))
+      :init
+      (progn
+	(require 'helm-config)
+	(helm-mode 1)
+	(set-face-attribute 'helm-selection nil
+			    )))
+    ;; for fuzzy matching
+    (setq helm-buffers-fuzzy-matching t)
+    (setq helm-recentf-fuzzy-match t)
+    (setq helm-locate-fuzzy-match t)
+    (setq helm-mode-fuzzy-match t)
+    (setq helm-completion-in-region-fuzzy-match t)
+    (setq helm-candidate-number-limit 100)
+
+    (use-package helm-swoop
+      :ensure t
+      :bind (("M-i" . helm-swoop)))
+
+    ;;(use-package helm-fuzzier
+    ;;:ensure t)
+    ;;(require 'helm-fuzzier)
+
+    ;;(helm-fuzzier-mode 1)
+    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+    (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  #+END_SRC
+
+
+
+* Nerd commenter
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-nerd-commenter
+    :ensure t
+    :config(progn
+	     (evilnc-default-hotkeys)))
+#+END_SRC
+
+
+* Latex
+  #+BEGIN_SRC emacs-lisp
+    (use-package tex
+      :ensure auctex
+      :config)
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq-default TeX-master nil)
+    (setq reftex-extra-bindings t)
+    (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    (setq reftex-plug-into-AUCTeX t)
+    (font-lock-add-keywords
+     'latex-mode
+     `((,(concat "^\\s-*\\\\\\("
+		 "\\(documentclass\\|\\(sub\\)?section[*]?\\)"
+		 "\\(\\[[^]% \t\n]*\\]\\)?{[-[:alnum:]_ ]+"
+		 "\\|"
+		 "\\(begin\\|end\\){document"
+		 "\\)}.*\n?")
+	(0 'your-face append))))
+
+    ;; master file settings
+    (setq-default TeX-master nil)
+    (setq-default TeX-master "master")
+    ;; (setq TeX-show-compilation t)
+
+    ;; get the bibliography
+    (setq reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource"))
+    '(reftex-use-external-file-finders t)
+    (eval-after-load 'helm-mode '(add-to-list
+				  'helm-completing-read-handlers-alist '(reftex-citation . nil) )
+		     )
+    (autoload 'helm-bibtex "helm-bibtex" "" t)
+    (setq bibtex-completion-bibliography
+	  '("~/Dropbox/Research/references.bib"
+	    ))
+    (setq bibtex-completion-library-path '("~/Dropbox/papers"))
+    (setq bibtex-completion-format-citation-functions
+	  '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+	    (latex-mode    . bibtex-completion-format-citation-cite)
+	    (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+	    (default       . bibtex-completion-format-citation-default)))
+    (setq reftex-default-bibliography
+	  '("~/Dropbox/Research/references.bib"))
+
+    (use-package company-auctex
+      :ensure t
+      :config
+      (company-auctex-init))
+
+    ;; From https://github.com/vspinu/company-math/issues/9
+    ;; settign up latex auto completion
+    (add-to-list 'company-backends 'company-math-symbols-unicode)
+    (defun my-latex-mode-setup ()
+      (setq-local company-backends
+		  (append '((company-math-symbols-latex company-latex-commands))
+			  company-backends)))
+    (add-hook 'tex-mode-hook 'my-latex-mode-setup)
+
+    ;; math symbols in latex
+    (use-package company-math
+      :ensure t)
+
+    (add-to-list 'company-backends 'company-math-symbols-unicode)
+    ;; Add yasnippet support for all company backends
+    ;; https://github.com/syl20bnr/spacemacs/pull/179
+    (defvar company-mode/enable-yas t
+      "Enable yasnippet for all backends.")
+
+    (defun company-mode/backend-with-yas (backend)
+      (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+	  backend
+	(append (if (consp backend) backend (list backend))
+		'(:with company-yasnippet))))
+
+    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+    ;; for different cite types
+    (setq reftex-cite-format 'natbib)
+    (add-hook 'latex-mode-hook #'auto-fill-mode)
+    (with-eval-after-load 'tex
+      (add-to-list 'safe-local-variable-values
+		   '(TeX-command-extra-options . "-shell-escape")))
+  #+END_SRC
+
+* eshell
+#+BEGIN_SRC emacs-lisp
+  (defun my-shell-hook ()
+    (local-set-key "\C-cl" 'erase-buffer))
+
+  (add-hook 'shell-mode-hook 'my-shell-hook)
+  (add-hook 'eshell-mode-hook (lambda() (company-mode 0)))
+#+END_SRC
+
+* elpy
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    ;; :load-path "~/.emacs.d/elisp/elpy/"
+    :ensure t
+    :diminish elpy-mode
+    :config(progn
+	     ;; (setq elpy-rpc-python-command "python3")
+	     ;; (setq 'python-indent-offset 4)
+	     (setq company-minimum-prefix-length 1)
+	     (setq python-shell-completion-native-enable nil)
+	     (setq elpy-rpc-timeout 10)
+	     (setq elpy-rpc-backend "jedi")
+	     ;; (elpy-use-ipython)
+	     ;; (elpy-clean-modeline)
+	     (elpy-enable)))
+  (use-package virtualenv
+    :ensure)
+  (let ((virtualenv-workon-starts-python nil))
+    (virtualenv-workon "sph3"))
+  (delete `elpy-module-highlight-indentation elpy-modules)
+#+END_SRC
+
+* Dabbrev
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package abbrev
+      :defer t
+      :diminish abbrev-mode
+      :init
+      (dolist (hook '(prog-mode-hook
+		      emacs-lisp-mode-hook
+		      text-mode-hook))
+	(add-hook hook (lambda () (abbrev-mode 1)))))
+    (define-key ctl-x-map "\C-i" 'endless/ispell-word-then-abbrev)
+
+    (defun endless/ispell-word-then-abbrev (p)
+      "Call `ispell-word'. Then create an abbrev for the correction made.
+    With prefix P, create local abbrev. Otherwise it will be global."
+      (interactive "P")
+      (let ((bef (downcase (or (thing-at-point 'word) ""))) aft)
+	(call-interactively 'ispell-word)
+	(setq aft (downcase (or (thing-at-point 'word) "")))
+	(unless (string= aft bef)
+	  (message "\"%s\" now expands to \"%s\" %sally"
+		   bef aft (if p "loc" "glob"))
+	  (define-abbrev
+	    (if p local-abbrev-table global-abbrev-table)
+	    bef aft))))
+
+    (setq save-abbrevs t)
+    (setq-default abbrev-mode t)
+  #+END_SRC
+
+* Markdown
+#+NAME:
+#+BEGIN_SRC emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+	   ("\\.md\\'" . markdown-mode)
+	   ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+  (custom-set-variables
+   '(markdown-command "/usr/bin/pandoc"))
+#+END_SRC
+* Relative line numbering
+#+BEGIN_SRC emacs-lisp
+  (linum-mode)
+  (linum-relative-global-mode)
+  (setq linum-relative-current-symbol "0")
+#+END_SRC
+* R language
+#+BEGIN_SRC emacs-lisp
+  (use-package ess
+    :ensure t
+    )
+
+  (require 'ess-site)
+  (add-to-list 'auto-mode-alist '("\\.R\\'" . R-mode))
+
+  (setq ess-history-directory "~/.R/")
+#+END_SRC
+* Racket
+  #+BEGIN_SRC emacs-lisp
+    (use-package racket-mode
+		:ensure t)
+  #+END_SRC
+* Elisp
+  Evaluste emacs lisp buffer
+  #+BEGIN_SRC emacs-lisp
+    (defun eval-region-or-buffer ()
+      (interactive)
+      (let ((debug-on-error t))
+	(cond
+	 (mark-active
+	  (call-interactively 'eval-region)
+	  (message "Region evaluated!")
+	  (setq deactivate-mark t))
+	 (t
+	  (eval-buffer)
+	  (message "Buffer evaluated!")))))
+
+    (add-hook 'emacs-lisp-mode-hook
+	      (lambda ()
+		(local-set-key (kbd "C-x E") 'eval-region-or-buffer)))
+
+    ;; Navigation goto definition
+    (use-package elisp-slime-nav
+      :ensure t)
+
+    (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
+      (add-hook hook 'elisp-slime-nav-mode))
+  #+END_SRC
