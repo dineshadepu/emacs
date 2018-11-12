@@ -22,90 +22,94 @@
      ;; (global-whitespace-mode t)
      ;; (setq whitespace-line-column 80)
      (setq make-backup-file nil)
-      (setq backup-inhibited t)
-      (setq auto-save-default nil)
+     (setq backup-inhibited t)
+     (setq auto-save-default nil)
 
-      ;; (setq scroll-conservatively 100)
+     ;; (setq scroll-conservatively 100)
 
-      (defalias 'yes-or-no-p 'y-or-n-p)
+     (defalias 'yes-or-no-p 'y-or-n-p)
 
-      (setq ring-bell-function 'ignore)
+     (setq ring-bell-function 'ignore)
 
-      (global-prettify-symbols-mode t)
+     (global-prettify-symbols-mode t)
 
-      (setf cursor-type 'bar)
+     (setf cursor-type 'bar)
 
-      ;; Electric auto pair
-      (electric-pair-mode t)
+     ;; Electric auto pair
+     (electric-pair-mode t)
 
-      (desktop-save-mode 1)
-       (setq column-number-mode t)
+     (desktop-save-mode 1)
+     (setq column-number-mode t)
 
-      ;; Bookmarks file in dropbox.
-      (setq bookmark-default-file "~/Dropbox/common/emacs/bookmarks.bmk" bookmark-save-flag 1)
+     ;; Bookmarks file in dropbox.
+     (setq bookmark-default-file "~/Dropbox/common/emacs/bookmarks.bmk" bookmark-save-flag 1)
 
-      ;; Copy to clipboard
-      (fset 'evil-visual-update-x-selection 'ignore)
-      (setq temporary-file-directory "~/.emacs.d/tmp/")
+     ;; Copy to clipboard
+     (fset 'evil-visual-update-x-selection 'ignore)
+     (setq temporary-file-directory "~/.emacs.d/tmp/")
 
-      ;; kill all oher buffers
-      (defun nuke-all-buffers ()
-	(interactive)
-	(mapcar 'kill-buffer (buffer-list))
-	(delete-other-windows))
+     ;; kill all oher buffers
+     (defun nuke-all-buffers ()
+       (interactive)
+       (mapcar 'kill-buffer (buffer-list))
+       (delete-other-windows))
 
-      (global-set-key (kbd "C-x K") 'nuke-all-buffers)
+     (global-set-key (kbd "C-x K") 'nuke-all-buffers)
 
-      (defun kill-other-buffers ()
-	(interactive)
-	(dolist (buffer (buffer-list))
-	  (unless (or (eql buffer (current-buffer)) )
-	    (kill-buffer buffer))))
-      (global-set-key (kbd "C-x L") 'kill-other-buffers)
+     (defun kill-other-buffers ()
+       (interactive)
+       (dolist (buffer (buffer-list))
+	 (unless (or (eql buffer (current-buffer)) )
+	   (kill-buffer buffer))))
+     (global-set-key (kbd "C-x L") 'kill-other-buffers)
 
-      ;; whitespace clean up mode
-      (add-hook 'before-save-hook 'whitespace-cleanup)
-      (menu-bar-mode -1)
-      (tool-bar-mode -1)
-      (setq inhibit-startup-message t)
+     ;; whitespace clean up mode
+     (add-hook 'before-save-hook 'whitespace-cleanup)
+     (menu-bar-mode -1)
+     (tool-bar-mode -1)
+     (setq inhibit-startup-message t)
 
-      (use-package which-key
-	:ensure t
-	:init
-	(which-key-mode))
+     (use-package which-key
+       :ensure t
+       :init
+       (which-key-mode))
 
-      (use-package beacon
-	:ensure t
-	:init
-	(beacon-mode 1))
+     (use-package beacon
+       :ensure t
+       :init
+       (beacon-mode 1))
 
-      (use-package restart-emacs
-	:ensure t
-	:bind (("C-x M-c" . restart-emacs)))
+     (use-package restart-emacs
+       :ensure t
+       :bind (("C-x M-c" . restart-emacs)))
 
-      (use-package rainbow-delimiters
-	:ensure t
-	:init
-	(progn
-	  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-	  (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)))
+     (use-package rainbow-delimiters
+       :ensure t
+       :init
+       (progn
+	 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+	 (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)))
 
-      (use-package aggressive-indent
-	:ensure t
-	:init (global-aggressive-indent-mode))
+     (use-package aggressive-indent
+       :ensure t
+       :init (global-aggressive-indent-mode))
 
-      (use-package golden-ratio                 ; Auto resize windows
-	:ensure t
-	:diminish golden-ratio-mode
-	:config
-	(golden-ratio-mode 1)
-	(setq golden-ratio-auto-scale t)
-	(setq golden-ratio-extra-commands
-	      (append golden-ratio-extra-commands
-		      '(evil-window-left
-			evil-window-right
-			evil-window-up
-			evil-window-down))))
+     (use-package golden-ratio                 ; Auto resize windows
+       :ensure t
+       :diminish golden-ratio-mode
+       :config
+       (golden-ratio-mode 1)
+       (setq golden-ratio-auto-scale t)
+       (setq golden-ratio-extra-commands
+	     (append golden-ratio-extra-commands
+		     '(evil-window-left
+		       evil-window-right
+		       evil-window-up
+		       evil-window-down))))
+
+     (use-package tiny
+       :ensure t)
+     (tiny-setup-default)
    #+END_SRC
 
 
@@ -119,104 +123,104 @@
 * Vim emulator
   Vim bindings for faster navigation
 #+BEGIN_SRC emacs-lisp
-  (use-package evil
-    :ensure t
-    :diminish evil
-    :init (evil-mode 1)
-    (setq evil-insert-state-cursor '((bar . 1) "white")
-	  evil-visual-state-cursor '(box "dark orange")
-	  evil-normal-state-cursor '(box "white"))
-    :bind (:map
-	   evil-insert-state-map
-	   ([S-left]     . windmove-left)
-	   ([S-right]    . windmove-right)
-	   ([S-up]     . windmove-up)
-	   ([S-down]    . windmove-down)
-	   ("SPC" . nil)
-	   :map
-	   evil-normal-state-map
-	   (";" . evil-ex)
-	   (":"   .       evil-repeat-find-char)
-	   :map    evil-motion-state-map
-	   ([S-left]     . windmove-left)
-	   ([S-right]    . windmove-right)
-	   ([S-up]     . windmove-up)
-	   ([S-down]    . windmove-down)
-	   ))
-  (with-eval-after-load 'evil
-    (define-key evil-normal-state-map (kbd "M-.") nil))
+(use-package evil
+  :ensure t
+  :diminish evil
+  :init (evil-mode 1)
+  (setq evil-insert-state-cursor '((bar . 1) "white")
+	evil-visual-state-cursor '(box "dark orange")
+	evil-normal-state-cursor '(box "white"))
+  :bind (:map
+	 evil-insert-state-map
+	 ([S-left]     . windmove-left)
+	 ([S-right]    . windmove-right)
+	 ([S-up]     . windmove-up)
+	 ([S-down]    . windmove-down)
+	 ("SPC" . nil)
+	 :map
+	 evil-normal-state-map
+	 (";" . evil-ex)
+	 (":"   .       evil-repeat-find-char)
+	 :map    evil-motion-state-map
+	 ([S-left]     . windmove-left)
+	 ([S-right]    . windmove-right)
+	 ([S-up]     . windmove-up)
+	 ([S-down]    . windmove-down)
+	 ))
+(with-eval-after-load 'evil
+  (define-key evil-normal-state-map (kbd "M-.") nil))
 
 
-  (use-package evil-leader
-    :ensure t
-    :diminish evil-leader
-    :init (global-evil-leader-mode)
-    :config (progn
-	      (evil-leader/set-leader ",")
-	      (evil-leader/set-key "b" 'switch-to-buffer)
-	      (evil-leader/set-key "s" 'save-buffer)
-	      (evil-leader/set-key "e" 'find-file)
-	      (evil-leader/set-key "1" 'delete-other-windows)
-	      (evil-leader/set-key "x" 'bookmark-jump)
-	      (evil-leader/set-key "0" 'delete-window)
-	      (evil-leader/set-key "3" 'split-window-right)
-	      (evil-leader/set-key "2" 'split-window-below)
-	      (evil-leader/set-key "." 'elpy-goto-definition-other-window)
-	      (evil-leader/set-key "," 'elpy-goto-definition)
-	      (evil-leader/set-key "f" 'ff-find-other-file)
-	      (evil-leader/set-key "c" 'recentf-open-files)
-	      (evil-leader/set-key "r" 'helm-bibtex)
-	      (evil-leader/set-key "l" 'org-ref-helm-insert-label-link)
-	      (evil-leader/set-key "w" 'ispell-word)
-	      (evil-leader/set-key "g" 'magit-status)
-	      (evil-leader/set-key "z" 'fzf)
-	      (evil-leader/set-key "n" 'windmove-left)
-	      (evil-leader/set-key "m" 'windmove-right)
-	      (evil-leader/set-key "<SPC>" 'windmove-down)
-	      (evil-leader/set-key "p" 'windmove-up)
-	      (evil-leader/set-key "o" 'org-ref-open-bibtex-notes)
-	      (evil-leader/set-key "`" 'org-edit-src-exit)
-	      (evil-leader/set-key "u" 'org-ref-open-pdf-at-point)
-	      (evil-leader/set-key "k" 'kill-this-buffer)))
+(use-package evil-leader
+  :ensure t
+  :diminish evil-leader
+  :init (global-evil-leader-mode)
+  :config (progn
+	    (evil-leader/set-leader ",")
+	    (evil-leader/set-key "b" 'switch-to-buffer)
+	    (evil-leader/set-key "s" 'save-buffer)
+	    (evil-leader/set-key "e" 'find-file)
+	    (evil-leader/set-key "1" 'delete-other-windows)
+	    (evil-leader/set-key "x" 'bookmark-jump)
+	    (evil-leader/set-key "0" 'delete-window)
+	    (evil-leader/set-key "3" 'split-window-right)
+	    (evil-leader/set-key "2" 'split-window-below)
+	    (evil-leader/set-key "." 'elpy-goto-definition-other-window)
+	    (evil-leader/set-key "," 'elpy-goto-definition)
+	    (evil-leader/set-key "f" 'ff-find-other-file)
+	    (evil-leader/set-key "c" 'org-ref-insert-ref-link)
+	    (evil-leader/set-key "r" 'helm-bibtex)
+	    (evil-leader/set-key "l" 'org-ref-helm-insert-label-link)
+	    (evil-leader/set-key "w" 'ispell-word)
+	    (evil-leader/set-key "g" 'magit-status)
+	    (evil-leader/set-key "z" 'fzf)
+	    (evil-leader/set-key "n" 'windmove-left)
+	    (evil-leader/set-key "m" 'windmove-right)
+	    (evil-leader/set-key "<SPC>" 'windmove-down)
+	    (evil-leader/set-key "p" 'windmove-up)
+	    (evil-leader/set-key "o" 'org-ref-open-bibtex-notes)
+	    (evil-leader/set-key "`" 'org-edit-src-exit)
+	    (evil-leader/set-key "u" 'org-ref-open-pdf-at-point)
+	    (evil-leader/set-key "k" 'kill-this-buffer)))
 
-  (use-package key-chord
-    :ensure t)
-  (require 'key-chord)
-  (key-chord-mode 1)
-  (key-chord-define evil-insert-state-map  "jk" 'evil-normal-state)
+(use-package key-chord
+  :ensure t)
+(require 'key-chord)
+(key-chord-mode 1)
+(key-chord-define evil-insert-state-map  "jk" 'evil-normal-state)
 
-  ;; evil cursor terminal
-  (use-package evil-terminal-cursor-changer
-    :ensure t)
-  (unless (display-graphic-p)
-    (require 'evil-terminal-cursor-changer)
-    (evil-terminal-cursor-changer-activate) ; or (etcc-on)
-    )
+;; evil cursor terminal
+(use-package evil-terminal-cursor-changer
+  :ensure t)
+(unless (display-graphic-p)
+  (require 'evil-terminal-cursor-changer)
+  (evil-terminal-cursor-changer-activate) ; or (etcc-on)
+  )
 
 
-  (setq evil-motion-state-cursor 'box)  ; █
-  (setq evil-visual-state-cursor 'box)  ; █
-  (setq evil-normal-state-cursor 'box)  ; █
-  (setq evil-insert-state-cursor 'bar)  ; ⎸
-  (setq evil-emacs-state-cursor  'hbar) ; _
+(setq evil-motion-state-cursor 'box)  ; █
+(setq evil-visual-state-cursor 'box)  ; █
+(setq evil-normal-state-cursor 'box)  ; █
+(setq evil-insert-state-cursor 'bar)  ; ⎸
+(setq evil-emacs-state-cursor  'hbar) ; _
 
   ;;; esc quits
-  (defun minibuffer-keyboard-quit ()
-    "Abort recursive edit.
+(defun minibuffer-keyboard-quit ()
+  "Abort recursive edit.
     In Delete Selection mode, if the mark is active, just deactivate it;
     then it takes a second \\[keyboard-quit] to abort the minibuffer."
-    (interactive)
-    (if (and delete-selection-mode transient-mark-mode mark-active)
-	(setq deactivate-mark  t)
-      (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-      (abort-recursive-edit)))
-  (define-key evil-normal-state-map [escape] 'keyboard-quit)
-  (define-key evil-visual-state-map [escape] 'keyboard-quit)
-  (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+  (interactive)
+  (if (and delete-selection-mode transient-mark-mode mark-active)
+      (setq deactivate-mark  t)
+    (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+    (abort-recursive-edit)))
+(define-key evil-normal-state-map [escape] 'keyboard-quit)
+(define-key evil-visual-state-map [escape] 'keyboard-quit)
+(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 #+END_SRC
 
 
@@ -233,17 +237,24 @@
 * Org mode
 ** Basic config
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'org-structure-template-alist
-		  '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
-     (define-key global-map "\C-cl" 'org-store-link)
-     (define-key global-map "\C-ca" 'org-agenda)
-     (setq org-log-done t)
+(add-to-list 'org-structure-template-alist
+	     '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
 
-     (setq org-agenda-files (list "~/org/phd.org"
-				  "~/org/dem.org"
-				  "~/org/rust.org"
-				  "~/org/java.org"
-				  "~/org/books.org"))
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done, to TODO otherwise."
+  (let (org-log-done org-log-states)   ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+
+(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+(setq org-log-done 'time)
+
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (setq company-backends '((company-yasnippet company-dabbrev)))))
    #+END_SRC
 
 ** Org bullets
@@ -254,7 +265,228 @@
        (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
    #+END_SRC
 
-** Org agenda
+
+** org ref
+   #+BEGIN_SRC emacs-lisp
+(require 'ox-latex)
+(add-to-list 'org-latex-classes
+	     '("phd"
+	       "\\documentclass[twoside]{iitbreport}"
+	       ("\\chapter{%s}" . "\\chapter*{%s}")
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(eval-after-load "org"
+  '(progn
+     ;; .txt files aren't in the list initially, but in case that changes
+     ;; in a future version of org, use if to avoid errors
+     (if (assoc "\\.txt\\'" org-file-apps)
+	 (setcdr (assoc "\\.txt\\'" org-file-apps) "notepad.exe %s")
+       (add-to-list 'org-file-apps '("\\.txt\\'" . "notepad.exe %s") t))
+     ;; Change .pdf association directly within the alist
+     (setcdr (assoc "\\.pdf\\'" org-file-apps) "evince %s")))
+
+(use-package org-ref
+  :ensure t
+  :defer t)
+
+(setq org-ref-completion-library 'org-ref-ivy-cite)
+(use-package org-ref
+  :after org
+  :init
+  (setq reftex-default-bibliography '("~/Dropbox/Research/references.bib"))
+  (setq org-ref-bibliography-notes "~/Dropbox/Research/notes/notes.org"
+        org-ref-default-bibliography '("~/Dropbox/Research/references.bib")
+        org-ref-pdf-directory "~/Dropbox/papers/")
+
+  (setq helm-bibtex-bibliography "~/Dropbox/Research/references.bib")
+  (setq helm-bibtex-library-path "~/Dropbox/papers/")
+
+  (setq helm-bibtex-pdf-open-function
+        (lambda (fpath)
+          (start-process "open" "*open*" "open" fpath)))
+
+  (setq helm-bibtex-notes-path "~/Dropbox/Research/notes/notes.org")
+  :config
+  (key-chord-define-global "uu" 'org-ref-cite-hydra/body)
+  ;; variables that control bibtex key format for auto-generation
+  ;; I want firstauthor-year-title-words
+  ;; this usually makes a legitimate filename to store pdfs under.
+  (setq bibtex-autokey-year-length 4
+        bibtex-autokey-name-year-separator "-"
+        bibtex-autokey-year-title-separator "-"
+        bibtex-autokey-titleword-separator "-"
+        bibtex-autokey-titlewords 2
+        bibtex-autokey-titlewords-stretch 1
+        bibtex-autokey-titleword-length 5))
+
+(use-package org-autolist
+  :after org
+  :config
+  (org-autolist-mode +1))
+
+(use-package doi-utils
+  :after org)
+
+(use-package org-ref-bibtex
+  :after org
+  :init
+  (setq org-ref-bibtex-hydra-key-binding "\C-cj"))
+
+(use-package org
+  :defer t
+  :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         ("C-c l" . org-store-link))
+  :config
+  (require 'ox-md)
+  (unbind-key "C-c ;" org-mode-map)
+
+  ;;file to save todo items
+  (setq org-agenda-files (quote ("~/Dropbox/Research/todo.org")))
+
+
+  ;;set priority range from A to C with default A
+  (setq org-highest-priority ?A)
+  (setq org-lowest-priority ?C)
+  (setq org-default-priority ?A)
+
+
+  ;;set colours for priorities
+  (setq org-priority-faces '((?A . (:foreground "OliveDrab" :weight bold))
+                             (?B . (:foreground "LightSteelBlue"))
+                             (?C . (:foreground "#F0DFAF"))))
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; org-mode agenda options                                                ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;open agenda in current window
+  (setq org-agenda-window-setup (quote current-window))
+  ;;warn me of any deadlines in next 7 days
+  (setq org-deadline-warning-days 7)
+
+  ;;don't show tasks as scheduled if they are already shown as a deadline
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+  ;;don't give awarning colour to tasks with impending deadlines
+  ;;if they are scheduled to be done
+  (setq org-agenda-skip-deadline-prewarning-if-scheduled (quote pre-scheduled))
+  ;;don't show tasks that are scheduled or have deadlines in the
+  ;;normal todo list
+  (setq org-agenda-todo-ignore-deadlines (quote all))
+  (setq org-agenda-todo-ignore-scheduled (quote all))
+
+  ;;sort tasks in order of when they are due and then by priority
+
+  (setq org-agenda-sorting-strategy
+        (quote
+         ((agenda deadline-up priority-down)
+          (todo priority-down category-keep)
+          (tags priority-down category-keep)
+          (search category-keep))))
+
+  (setq org-capture-templates
+        '(("t" "todo" entry (file+headline "~/Dropbox/Research/todo.org" "Tasks")
+           "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n")))
+
+
+  (defun my/org-mode-defaults ()
+    (turn-on-org-cdlatex)
+    ;; (diminish 'org-cdlatex-mode "")
+    (turn-on-auto-fill)
+
+    ;; make `company-backends' local is critcal
+    ;; or else, you will have completion in every major mode, that's very annoying!
+    (make-local-variable 'company-backends)
+    ;; company-ispell is the plugin to complete words
+    (add-to-list 'company-backends 'company-ispell))
+
+  (add-hook 'org-mode-hook 'my/org-mode-defaults)
+
+  ;; Fontify org-mode code blocks
+  (setq org-src-fontify-natively t)
+
+  (setq org-todo-keywords
+        (quote ((sequence "TODO(t)" "|" "CANCELLED(c@/!)" "DONE(d)"))))
+
+  (setq org-use-fast-todo-selection t)
+  (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+
+  (setq org-todo-keyword-faces
+        '(("TODO" . (:foreground "green" :weight bold))
+          ("NEXT" :foreground "blue" :weight bold)
+          ("WAITING" :foreground "orange" :weight bold)
+          ("HOLD" :foreground "magenta" :weight bold)
+          ("CANCELLED" :foreground "forest green" :weight bold)))
+
+  (setq org-enforce-todo-dependencies t)
+  (setq org-src-tab-acts-natively t)
+
+  (setq org-latex-pdf-process
+        (quote ("pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
+                "bibtex $(basename %b)"
+                "pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
+                "pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f")))
+
+  (setq org-latex-create-formula-image-program 'imagemagick)
+
+  ;; Tell the latex export to use the minted package for source
+  ;; code coloration.
+  (add-to-list 'org-latex-packages-alist '("" "minted"))
+  (require 'ox-latex)
+  (setq org-latex-listings 'minted)
+
+  ;; (setq org-latex-minted-options
+  ;;       '(("frame" "lines") ("framesep" "6pt")
+  ;;         ("mathescape" "true") ("fontsize" "\\small")))
+
+  (setq org-confirm-babel-evaluate nil)
+
+  ;; execute external programs.
+  (org-babel-do-load-languages
+   (quote org-babel-load-languages)
+   (quote ((emacs-lisp . t)
+           (dot . t)
+           (ditaa . t)
+           (python . t)
+           (ruby . t)
+           (gnuplot . t)
+           (clojure . t)
+           (sh . t)
+           (haskell . t)
+           (octave . t)
+           (org . t)
+           (plantuml . t)
+           (scala . t)
+           (sql . t)
+           (latex . t))))
+
+  (eval-after-load 'org-src
+    '(define-key org-src-mode-map
+       "\C-x\C-s" #'org-edit-src-exit)))
+
+(setq org-src-fontify-natively t
+      org-confirm-babel-evaluate nil
+      org-src-preserve-indentation t)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((python . t)))
+
+(setq org-latex-pdf-process
+      '("pdflatex -interaction nonstopmode -output-directory %o %f"
+	"bibtex %b"
+	"pdflatex -interaction nonstopmode -output-directory %o %f"
+	"pdflatex -interaction nonstopmode -output-directory %o %f"))
+
+(require 'org-ref)
+(require 'org-ref-pdf)
+(require 'org-ref-url-utils)
+(require 'org-ref-latex)
+(setq org-latex-prefer-user-labels t)
+(setq org-latex-pdf-process '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
+   #+END_SRC
 
 * IDO mode
 
@@ -322,17 +554,6 @@
 
     (use-package evil-magit
       :ensure t)
-  #+END_SRC
-
-* Dashboard
-  #+BEGIN_SRC emacs-lisp
-    (use-package dashboard
-      :ensure t
-      :config
-      (dashboard-setup-startup-hook)
-      (setq dashboard-items '((recents . 10)))
-      (setq dashboard-banner-logo-title "Hello Dinesh!, Have a good day")
-      )
   #+END_SRC
 
 
@@ -490,30 +711,93 @@
 
 * Yasnippet
   #+BEGIN_SRC emacs-lisp
-    (use-package yasnippet
-      :ensure t
-      :init
-      (yas-global-mode 1)
-      :config
-      (use-package yasnippet-snippets
-	:ensure t)
-      (yas-reload-all))
+(use-package yasnippet
+  :ensure t
+  :init
+  (yas-global-mode 1)
+  :config
+  (use-package yasnippet-snippets
+    :ensure t)
+  (yas-reload-all))
 
-    ;; Add yasnippet support for all company backends
-    ;; https://github.com/syl20bnr/spacemacs/pull/179
-    (defvar company-mode/enable-yas t
-      "Enable yasnippet for all backends.")
+;; Add yasnippet support for all company backends
+;; https://github.com/syl20bnr/spacemacs/pull/179
+(defvar company-mode/enable-yas t
+  "Enable yasnippet for all backends.")
 
-    (defun company-mode/backend-with-yas (backend)
-      (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
-	  backend
-	(append (if (consp backend) backend (list backend))
-		'(:with company-yasnippet))))
+;; Company yasnippet issue resolution
+(defun check-expansion ()
+  (save-excursion
+    (if (looking-at "\\_>") t
+      (backward-char 1)
+      (if (looking-at "\\.") t
+	(backward-char 1)
+	(if (looking-at "->") t nil)))))
 
-    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+(defun do-yas-expand ()
+  (let ((yas/fallback-behavior 'return-nil))
+    (yas/expand)))
+
+(defun tab-indent-or-complete ()
+  (interactive)
+  (cond
+   ((minibufferp)
+    (minibuffer-complete))
+   (t
+    (indent-for-tab-command)
+    (if (or (not yas/minor-mode)
+	    (null (do-yas-expand)))
+	(if (check-expansion)
+	    (progn
+	      (company-manual-begin)
+	      (if (null company-candidates)
+		  (progn
+		    (company-abort)
+		    (indent-for-tab-command)))))))))
+
+(defun tab-complete-or-next-field ()
+  (interactive)
+  (if (or (not yas/minor-mode)
+	  (null (do-yas-expand)))
+      (if company-candidates
+	  (company-complete-selection)
+	(if (check-expansion)
+	    (progn
+	      (company-manual-begin)
+	      (if (null company-candidates)
+		  (progn
+		    (company-abort)
+		    (yas-next-field))))
+	  (yas-next-field)))))
+
+(defun expand-snippet-or-complete-selection ()
+  (interactive)
+  (if (or (not yas/minor-mode)
+	  (null (do-yas-expand))
+	  (company-abort))
+      (company-complete-selection)))
+
+(defun abort-company-or-yas ()
+  (interactive)
+  (if (null company-candidates)
+      (yas-abort-snippet)
+    (company-abort)))
+
+(global-set-key [tab] 'tab-indent-or-complete)
+(global-set-key (kbd "TAB") 'tab-indent-or-complete)
+(global-set-key [(control return)] 'company-complete-common)
+
+(define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
+(define-key company-active-map (kbd "TAB") 'expand-snippet-or-complete-selection)
+
+(define-key yas-minor-mode-map [tab] nil)
+(define-key yas-minor-mode-map (kbd "TAB") nil)
+
+(define-key yas-keymap [tab] 'tab-complete-or-next-field)
+(define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
+(define-key yas-keymap [(control tab)] 'yas-next-field)
+(define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
   #+END_SRC
-
-
 
 * flycheck
   #+BEGIN_SRC emacs-lisp
