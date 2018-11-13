@@ -151,7 +151,8 @@
 (with-eval-after-load 'evil
   (define-key evil-normal-state-map (kbd "M-.") nil))
 
-
+(recentf-mode 1)
+(global-set-key (kbd "<f7>") 'recentf-open-files)
 (use-package evil-leader
   :ensure t
   :diminish evil-leader
@@ -169,7 +170,7 @@
 	    (evil-leader/set-key "2" 'split-window-below)
 	    (evil-leader/set-key "." 'elpy-goto-definition-other-window)
 	    (evil-leader/set-key "," 'elpy-goto-definition)
-	    (evil-leader/set-key "c" 'org-ref-insert-ref-link)
+	    (evil-leader/set-key "i" 'org-ref-insert-ref-link)
 	    (evil-leader/set-key "l" 'org-ref-helm-insert-label-link)
 	    (evil-leader/set-key "w" 'ispell-word)
 	    (evil-leader/set-key "g" 'magit-status)
@@ -257,6 +258,11 @@
 (if (require 'toc-org nil t)
     (add-hook 'org-mode-hook 'toc-org-mode)
   (warn "toc-org not found"))
+;; Disable linum mode for org mode.
+(defun nolinum ()
+  (global-linum-mode 0)
+  )
+(add-hook 'org-mode-hook 'nolinum)
    #+END_SRC
 
 ** Org bullets
