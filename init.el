@@ -20,7 +20,7 @@
  '(markdown-command "/usr/bin/pandoc" t)
  '(org-agenda-files
    (quote
-    ("~/phd_thesis/notes/org_ref_manual.org" "~/Dropbox/org/todo.org" "~/Dropbox/org/dem.org")))
+    ("~/README.org" "~/Dropbox/org/todo.org" "~/Dropbox/org/dem.org")))
  '(package-selected-packages
    (quote
     (org-autolist racket-mode ess linum-relative magithub company-reftex org-plus-contrib pyvenv virtualenv elpy yasnippet-snippets which-key use-package toml-mode symon spacemacs-theme spaceline smex rg restart-emacs rainbow-delimiters racer ox-reveal org-ref org-bullets monokai-theme monokai-alt-theme helm-swoop golden-ratio git-timemachine git-gutter flycheck-rust flycheck-package flx-ido exec-path-from-shell evil-terminal-cursor-changer evil-nerd-commenter evil-magit evil-leader evil-escape dmenu diminish dashboard csharp-mode company-statistics company-math company-irony company-auctex color-theme clang-format cargo beacon avy aggressive-indent))))

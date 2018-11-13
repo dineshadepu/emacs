@@ -15,101 +15,102 @@
 
 ** Common
    #+BEGIN_SRC emacs-lisp
-     (setq-default fill-column 80)
-     (require 'whitespace)
-     (setq whitespace-style '(face empty tabs lines-tail trailing))
-     (add-hook 'before-save-hook 'delete-trailing-whitespace)
-     ;; (global-whitespace-mode t)
-     ;; (setq whitespace-line-column 80)
-     (setq make-backup-file nil)
-     (setq backup-inhibited t)
-     (setq auto-save-default nil)
+(setq-default fill-column 80)
+(require 'whitespace)
+(setq whitespace-style '(face empty tabs lines-tail trailing))
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; (global-whitespace-mode t)
+;; (setq whitespace-line-column 80)
+(setq make-backup-file nil)
+(setq backup-inhibited t)
+(setq auto-save-default nil)
 
-     ;; (setq scroll-conservatively 100)
+;; (setq scroll-conservatively 100)
 
-     (defalias 'yes-or-no-p 'y-or-n-p)
+(defalias 'yes-or-no-p 'y-or-n-p)
 
-     (setq ring-bell-function 'ignore)
+(setq ring-bell-function 'ignore)
 
-     (global-prettify-symbols-mode t)
+(global-prettify-symbols-mode t)
 
-     (setf cursor-type 'bar)
+(setf cursor-type 'bar)
 
-     ;; Electric auto pair
-     (electric-pair-mode t)
+;; Electric auto pair
+(electric-pair-mode t)
 
-     (desktop-save-mode 1)
-     (setq column-number-mode t)
+(desktop-save-mode 1)
+(setq column-number-mode t)
 
-     ;; Bookmarks file in dropbox.
-     (setq bookmark-default-file "~/Dropbox/common/emacs/bookmarks.bmk" bookmark-save-flag 1)
+;; Bookmarks file in dropbox.
+(setq bookmark-default-file "~/Dropbox/common/emacs/bookmarks.bmk" bookmark-save-flag 1)
 
-     ;; Copy to clipboard
-     (fset 'evil-visual-update-x-selection 'ignore)
-     (setq temporary-file-directory "~/.emacs.d/tmp/")
+;; Copy to clipboard
+(fset 'evil-visual-update-x-selection 'ignore)
+(setq temporary-file-directory "~/.emacs.d/tmp/")
 
-     ;; kill all oher buffers
-     (defun nuke-all-buffers ()
-       (interactive)
-       (mapcar 'kill-buffer (buffer-list))
-       (delete-other-windows))
+;; kill all oher buffers
+(defun nuke-all-buffers ()
+  (interactive)
+  (mapcar 'kill-buffer (buffer-list))
+  (delete-other-windows))
 
-     (global-set-key (kbd "C-x K") 'nuke-all-buffers)
+(global-set-key (kbd "C-x K") 'nuke-all-buffers)
 
-     (defun kill-other-buffers ()
-       (interactive)
-       (dolist (buffer (buffer-list))
-	 (unless (or (eql buffer (current-buffer)) )
-	   (kill-buffer buffer))))
-     (global-set-key (kbd "C-x L") 'kill-other-buffers)
+(defun kill-other-buffers ()
+  (interactive)
+  (dolist (buffer (buffer-list))
+    (unless (or (eql buffer (current-buffer)) )
+      (kill-buffer buffer))))
+(global-set-key (kbd "C-x L") 'kill-other-buffers)
 
-     ;; whitespace clean up mode
-     (add-hook 'before-save-hook 'whitespace-cleanup)
-     (menu-bar-mode -1)
-     (tool-bar-mode -1)
-     (setq inhibit-startup-message t)
+;; whitespace clean up mode
+(add-hook 'before-save-hook 'whitespace-cleanup)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(setq inhibit-startup-message t)
 
-     (use-package which-key
-       :ensure t
-       :init
-       (which-key-mode))
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode))
 
-     (use-package beacon
-       :ensure t
-       :init
-       (beacon-mode 1))
+(use-package beacon
+  :ensure t
+  :init
+  (beacon-mode 1))
 
-     (use-package restart-emacs
-       :ensure t
-       :bind (("C-x M-c" . restart-emacs)))
+(use-package restart-emacs
+  :ensure t
+  :bind (("C-x M-c" . restart-emacs)))
 
-     (use-package rainbow-delimiters
-       :ensure t
-       :init
-       (progn
-	 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-	 (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)))
+(use-package rainbow-delimiters
+  :ensure t
+  :init
+  (progn
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+    (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)))
 
-     (use-package aggressive-indent
-       :ensure t
-       :init (global-aggressive-indent-mode))
+(use-package aggressive-indent
+  :ensure t
+  :init (global-aggressive-indent-mode))
 
-     (use-package golden-ratio                 ; Auto resize windows
-       :ensure t
-       :diminish golden-ratio-mode
-       :config
-       (golden-ratio-mode 1)
-       (setq golden-ratio-auto-scale t)
-       (setq golden-ratio-extra-commands
-	     (append golden-ratio-extra-commands
-		     '(evil-window-left
-		       evil-window-right
-		       evil-window-up
-		       evil-window-down))))
+(use-package golden-ratio                 ; Auto resize windows
+  :ensure t
+  :diminish golden-ratio-mode
+  :config
+  (golden-ratio-mode 1)
+  (setq golden-ratio-auto-scale t)
+  (setq golden-ratio-extra-commands
+	(append golden-ratio-extra-commands
+		'(evil-window-left
+		  evil-window-right
+		  evil-window-up
+		  evil-window-down))))
 
-     (use-package tiny
-       :ensure t)
-     (tiny-setup-default)
+(use-package tiny
+  :ensure t)
+(tiny-setup-default)
+(prefer-coding-system 'utf-8-unix)
    #+END_SRC
 
 
@@ -157,8 +158,9 @@
   :init (global-evil-leader-mode)
   :config (progn
 	    (evil-leader/set-leader ",")
+	    (evil-leader/set-key "a" 'org-agenda-file-to-front)
+	    (evil-leader/set-key "r" 'org-remove-file)
 	    (evil-leader/set-key "b" 'switch-to-buffer)
-	    (evil-leader/set-key "s" 'save-buffer)
 	    (evil-leader/set-key "e" 'find-file)
 	    (evil-leader/set-key "1" 'delete-other-windows)
 	    (evil-leader/set-key "x" 'bookmark-jump)
@@ -167,20 +169,14 @@
 	    (evil-leader/set-key "2" 'split-window-below)
 	    (evil-leader/set-key "." 'elpy-goto-definition-other-window)
 	    (evil-leader/set-key "," 'elpy-goto-definition)
-	    (evil-leader/set-key "f" 'ff-find-other-file)
 	    (evil-leader/set-key "c" 'org-ref-insert-ref-link)
-	    (evil-leader/set-key "r" 'helm-bibtex)
 	    (evil-leader/set-key "l" 'org-ref-helm-insert-label-link)
 	    (evil-leader/set-key "w" 'ispell-word)
 	    (evil-leader/set-key "g" 'magit-status)
-	    (evil-leader/set-key "z" 'fzf)
 	    (evil-leader/set-key "n" 'windmove-left)
 	    (evil-leader/set-key "m" 'windmove-right)
 	    (evil-leader/set-key "<SPC>" 'windmove-down)
 	    (evil-leader/set-key "p" 'windmove-up)
-	    (evil-leader/set-key "o" 'org-ref-open-bibtex-notes)
-	    (evil-leader/set-key "`" 'org-edit-src-exit)
-	    (evil-leader/set-key "u" 'org-ref-open-pdf-at-point)
 	    (evil-leader/set-key "k" 'kill-this-buffer)))
 
 (use-package key-chord
@@ -255,6 +251,12 @@
 (add-hook 'org-mode-hook
           (lambda ()
             (setq company-backends '((company-yasnippet company-dabbrev)))))
+
+(use-package toc-org
+  :ensure t)
+(if (require 'toc-org nil t)
+    (add-hook 'org-mode-hook 'toc-org-mode)
+  (warn "toc-org not found"))
    #+END_SRC
 
 ** Org bullets
@@ -485,7 +487,7 @@
 (require 'org-ref-url-utils)
 (require 'org-ref-latex)
 (setq org-latex-prefer-user-labels t)
-(setq org-latex-pdf-process '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
+;; (setq org-latex-pdf-process '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
    #+END_SRC
 
 * IDO mode
