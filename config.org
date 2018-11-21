@@ -258,11 +258,17 @@
 (if (require 'toc-org nil t)
     (add-hook 'org-mode-hook 'toc-org-mode)
   (warn "toc-org not found"))
-;; Disable linum mode for org mode.
-(defun nolinum ()
-  (global-linum-mode 0)
-  )
-(add-hook 'org-mode-hook 'nolinum)
+(add-hook 'org-trigger-hook 'save-buffer)
+
+;; Wrap a figure from results to name and label and refer
+(defun src-decorate (&optional caption attributes)
+  "A wrap function for src blocks."
+  (concat
+   "ORG\n"
+   (when attributes
+     (concat (mapconcat 'identity attributes "\n") "\n"))
+   (when caption
+     (format "#+caption: %s" caption))))
    #+END_SRC
 
 ** Org bullets
@@ -493,8 +499,9 @@
 (require 'org-ref-url-utils)
 (require 'org-ref-latex)
 (setq org-latex-prefer-user-labels t)
-;; (setq org-latex-pdf-process '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
+(setq org-latex-pdf-process '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
    #+END_SRC
+
 
 * IDO mode
 
@@ -540,28 +547,28 @@
 * Git for version control
 
   #+BEGIN_SRC emacs-lisp
-    (use-package magit
-      :ensure t)
-    (global-auto-revert-mode t)
-    (use-package git-gutter
-      :ensure t
-      :init
-      )
-    (global-git-gutter-mode 0)
-    ;; disable evil in timemachine
-    ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
-    (eval-after-load 'git-timemachine
-      '(progn
-	 (evil-make-overriding-map git-timemachine-mode-map 'normal)
-	 ;; force update evil keymaps after git-timemachine-mode loaded
-	 (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps)))
+(use-package magit
+  :ensure t)
+(global-auto-revert-mode t)
+(use-package git-gutter
+  :ensure t
+  :init
+  )
+(global-git-gutter-mode 0)
+;; disable evil in timemachine
+;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
+(eval-after-load 'git-timemachine
+  '(progn
+     (evil-make-overriding-map git-timemachine-mode-map 'normal)
+     ;; force update evil keymaps after git-timemachine-mode loaded
+     (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps)))
 
-    (use-package git-timemachine
-      :ensure t
-      )
+(use-package git-timemachine
+  :ensure t
+  )
 
-    (use-package evil-magit
-      :ensure t)
+(use-package evil-magit
+  :ensure t)
   #+END_SRC
 
 
@@ -582,25 +589,6 @@
   ;;   (spaceline-helm-mode 1)
   ;;   (spaceline-emacs-theme))
 #+END_SRC
-
-
-** diminish
-   #+BEGIN_SRC emacs-lisp
-     (use-package diminish
-       :ensure t
-       :init
-       (diminish 'hungru-delete-mode)
-       (diminish 'beacon-mode)
-       (diminish 'rainbow-mode)
-       (diminish 'flycheck-mode)
-       (diminish 'yas-mode)
-       (diminish 'auto-revert-mode)
-       (diminish 'undo-tree-mode)
-       (diminish 'company-mode)
-       (diminish 'which-key-mode))
-   #+END_SRC
-
-   #+RESULTS:
 
 * auto-completion
 
@@ -1036,12 +1024,6 @@
   (custom-set-variables
    '(markdown-command "/usr/bin/pandoc"))
 #+END_SRC
-* Relative line numbering
-#+BEGIN_SRC emacs-lisp
-  (linum-mode)
-  (linum-relative-global-mode)
-  (setq linum-relative-current-symbol "0")
-#+END_SRC
 * R language
 #+BEGIN_SRC emacs-lisp
   (use-package ess
@@ -1083,4 +1065,53 @@
 
     (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
       (add-hook hook 'elisp-slime-nav-mode))
+  #+END_SRC
+* Sage math
+  #+NAME:
+  #+BEGIN_SRC emacs-lisp
+(use-package sage-shell-mode
+  :ensure t)
+;; Run SageMath by M-x run-sage instead of M-x sage-shell:run-sage
+(sage-shell:define-alias)
+
+;; Turn on eldoc-mode in Sage terminal and in Sage source files
+(add-hook 'sage-shell-mode-hook #'eldoc-mode)
+(add-hook 'sage-shell:sage-mode-hook #'eldoc-mode)
+
+
+(use-package ob-sagemath
+  :ensure t)
+;; Ob-sagemath supports only evaluating with a session.
+(setq org-babel-default-header-args:sage '((:session . t)
+                                           (:results . "output")))
+
+;; C-c c for asynchronous evaluating (only for SageMath code blocks).
+(with-eval-after-load "org"
+  (define-key org-mode-map (kbd "C-c c") 'ob-sagemath-execute-async))
+
+;; Do not confirm before evaluation
+(setq org-confirm-babel-evaluate nil)
+
+;; Do not evaluate code blocks when exporting.
+(setq org-export-babel-evaluate nil)
+
+;; Show images when opening a file.
+(setq org-startup-with-inline-images t)
+
+;; Show images after evaluating code blocks.
+(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+  #+END_SRC
+* Eye browse
+  #+BEGIN_SRC emacs-lisp
+(use-package eyebrowse
+  :ensure t)
+(eyebrowse-mode t)
+  #+END_SRC
+* Doom mode
+  #+BEGIN_SRC emacs-lisp
+;; https://github.com/seagle0128/doom-modeline
+(use-package doom-modeline
+  :ensure t
+  :defer t
+  :hook (after-init . doom-modeline-init))
   #+END_SRC
