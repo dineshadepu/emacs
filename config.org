@@ -111,6 +111,13 @@
   :ensure t)
 (tiny-setup-default)
 (prefer-coding-system 'utf-8-unix)
+
+(defadvice find-file (before make-directory-maybe (filename &optional wildcards) activate)
+  "Create parent directory if not exists while visiting file."
+  (unless (file-exists-p filename)
+    (let ((dir (file-name-directory filename)))
+      (unless (file-exists-p dir)
+        (make-directory dir)))))
    #+END_SRC
 
 
@@ -292,6 +299,23 @@
 	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(add-to-list 'org-latex-classes
+	     '("jcp"
+	       "\\documentclass[twoside]{revtex4-1}"
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+(add-to-list 'org-latex-classes
+	     '("elsarticle"
+	       "\\documentclass[review]{elsarticle}"
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 (eval-after-load "org"
   '(progn
      ;; .txt files aren't in the list initially, but in case that changes
@@ -311,7 +335,7 @@
   :after org
   :init
   (setq reftex-default-bibliography '("~/Dropbox/Research/references.bib"))
-  (setq org-ref-bibliography-notes "~/Dropbox/Research/notes/notes.org"
+  (setq org-ref-bibliography-notes "~/Dropbox/Research/notes.org"
         org-ref-default-bibliography '("~/Dropbox/Research/references.bib")
         org-ref-pdf-directory "~/Dropbox/papers/")
 
@@ -467,13 +491,11 @@
            (ruby . t)
            (gnuplot . t)
            (clojure . t)
-           (sh . t)
            (shell . t)
            (haskell . t)
            (octave . t)
            (org . t)
            (plantuml . t)
-           (scala . t)
            (sql . t)
            (latex . t))))
 
@@ -1031,14 +1053,14 @@
 #+END_SRC
 * R language
 #+BEGIN_SRC emacs-lisp
-  (use-package ess
-    :ensure t
-    )
+;; (use-package ess
+;;   :ensure t
+;;   )
 
-  (require 'ess-site)
-  (add-to-list 'auto-mode-alist '("\\.R\\'" . R-mode))
+;; (require 'ess-site)
+;; (add-to-list 'auto-mode-alist '("\\.R\\'" . R-mode))
 
-  (setq ess-history-directory "~/.R/")
+;; (setq ess-history-directory "~/.R/")
 #+END_SRC
 * Racket
   #+BEGIN_SRC emacs-lisp
@@ -1125,3 +1147,45 @@
 (add-hook 'text-mode-hook 'flyspell-mode)
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   #+END_SRC
+* Tips in Ubuntu
+  #+BEGIN_EXAMPLE
+  #+STARTUP: overview
+  #+STARTUP: content
+  #+STARTUP: showall
+  #+STARTUP: showeverything
+  #+END_EXAMPLE
+* Tips for emacs
+** Painless way to install emacs
+   #+BEGIN_EXAMPLE
+   sudo add-apt-repository ppa:kelleyk/emacs
+   sudo apt-get update
+   sudo apt install emacs26
+   #+END_EXAMPLE
+
+** Multiple workspaces
+    #+BEGIN_EXAMPLE
+    see here >> https://redd.it/1m73gs
+    Summary is
+
+    The stock standard way to do what you want is C-x r w <register> to save your
+    current window config to that register and C-x r j <register> to restore the
+    window config at that register.
+
+    Example scenario and workflow:
+
+    I want to edit, compile and debug some C program text and Common Lisp program
+    text, and I can't fit everything in the one frame.
+
+    I setup a bunch of windows in that frame for my C environment e.g a window for
+    dired, a window for my source file a bunch of windows for different gdb buffers.
+
+    I save that configuration to register 1 with C-x r w 1
+
+    I then do a C-x 1 and setup my Common Lisp environment e.g. a window for the
+    SLIME repl, a window for the SLIME object inspector, a window for some source
+    files.
+
+    I save that configuration to register 2 with C-x r w 2
+
+    I can now switch to whichever configuration I want using C-x r j 1, C-x r j 2.
+    #+END_EXAMPLE
