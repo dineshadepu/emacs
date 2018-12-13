@@ -1139,8 +1139,8 @@
 ;; https://github.com/seagle0128/doom-modeline
 (use-package doom-modeline
   :ensure t
-  :defer t
-  :hook (after-init . doom-modeline-init))
+  :defer t)
+(doom-modeline-init)
   #+END_SRC
 * Spell check
   #+BEGIN_SRC emacs-lisp
@@ -1148,12 +1148,6 @@
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   #+END_SRC
 * Tips in Ubuntu
-  #+BEGIN_EXAMPLE
-  #+STARTUP: overview
-  #+STARTUP: content
-  #+STARTUP: showall
-  #+STARTUP: showeverything
-  #+END_EXAMPLE
 * Tips for emacs
 ** Painless way to install emacs
    #+BEGIN_EXAMPLE
@@ -1189,3 +1183,85 @@
 
     I can now switch to whichever configuration I want using C-x r j 1, C-x r j 2.
     #+END_EXAMPLE
+
+** Start up
+  #+BEGIN_EXAMPLE
+  #+STARTUP: overview
+  #+STARTUP: content
+  #+STARTUP: showall
+  #+STARTUP: showeverything
+  #+END_EXAMPLE
+
+** Python yapf
+   Create a config file =~/.config/yapf/style= with contents as
+   #+BEGIN_EXAMPLE
+	[style]
+	SPLIT_BEFORE_NAMED_ASSIGNS=False
+   #+END_EXAMPLE
+
+
+* Save workspaces
+  #+BEGIN_SRC emacs-lisp
+(use-package perspective
+  :ensure t)
+;; activate perspective
+(persp-mode)
+;; Save workspaces upon emacs closing
+(defun perspectives-buffer-name-p (buffer)
+  (if (and buffer
+           (buffer-name buffer)
+           (not (string-prefix-p "*" (buffer-name buffer)))
+           (not (string-suffix-p "*" (buffer-name buffer))))
+      t
+    nil))
+
+(defun perspectives-hash-filter (current filtered parameters saving)
+  (let ((value (cdr current))
+	(result ())
+	(keys (hash-table-keys (cdr current))))
+    ;; for every perspective...
+    (dolist (key keys)
+      (let ((persp (gethash key value)))
+	;; that isn't killed...
+	(if (not (persp-killed persp))
+            (add-to-list
+             'result
+             (cons key
+		   ;; save the list of buffers
+		   (list (cons "buffers"
+			       (list
+				(mapcar 'buffer-name (seq-filter 'perspectives-buffer-name-p (persp-buffers persp)))))))))))
+    ;; return a different variable name so perspectives doesn't clobber it
+    (cons 'perspectives-hash-serialized result)))
+
+;; serialize perspectives hash
+(add-to-list 'frameset-filter-alist '(perspectives-hash . perspectives-hash-filter))
+;; don't serialize anything else
+(add-to-list 'frameset-filter-alist '(persp-modestring . :never))
+(add-to-list 'frameset-filter-alist '(persp-recursive . :never))
+(add-to-list 'frameset-filter-alist '(persp-last . :never))
+(add-to-list 'frameset-filter-alist '(persp-curr . :never))
+
+(defun perspectives-restore-state ()
+  (dolist (frame (frame-list))
+    ;; get the serialized state off of the frame
+    (let ((state (frame-parameter frame 'perspectives-hash-serialized)))
+      (if state (progn
+		  (message "Found state, attempting restore")
+		  ;; delete it so we don't end up in a loop
+		  (set-frame-parameter frame 'perspectives-hash-serialized nil)
+		  (with-selected-frame frame
+		    (dolist (elem state)
+		      ;; recreate the perspective
+		      (with-perspective (car elem)
+					(dolist (buffer-name (car (cdr (assoc "buffers" (cdr elem)))))
+					  ;; add the buffer back to the perspective
+					  (persp-add-buffer buffer-name)
+					  )))
+		    ))
+	(message "No state found")
+	)
+      )))
+
+(add-hook 'desktop-after-read-hook 'perspectives-restore-state)
+  #+END_SRC
