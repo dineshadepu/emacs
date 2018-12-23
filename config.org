@@ -144,16 +144,30 @@
 	 ([S-right]    . windmove-right)
 	 ([S-up]     . windmove-up)
 	 ([S-down]    . windmove-down)
+	 ("<down-mouse-1>" . nil)
+	 ("<mouse-1>" . nil)
+	 ("<down-mouse-3>" . nil)
+	 ("<mouse-3>" . nil)
 	 ("SPC" . nil)
 	 :map
 	 evil-normal-state-map
 	 (";" . evil-ex)
 	 (":"   .       evil-repeat-find-char)
+	 ("<down-mouse-1>" . nil)
+	 ("<mouse-1>" . nil)
+	 ("<down-mouse-3>" . nil)
+	 ("<mouse-3>" . nil)
+	 ("SPC" . nil)
 	 :map    evil-motion-state-map
 	 ([S-left]     . windmove-left)
 	 ([S-right]    . windmove-right)
 	 ([S-up]     . windmove-up)
 	 ([S-down]    . windmove-down)
+	 ("<down-mouse-1>" . nil)
+	 ("<mouse-1>" . nil)
+	 ("<down-mouse-3>" . nil)
+	 ("<mouse-3>" . nil)
+	 ("SPC" . nil)
 	 ))
 (with-eval-after-load 'evil
   (define-key evil-normal-state-map (kbd "M-.") nil))
@@ -170,6 +184,7 @@
 	    (evil-leader/set-key "r" 'org-remove-file)
 	    (evil-leader/set-key "b" 'switch-to-buffer)
 	    (evil-leader/set-key "e" 'find-file)
+	    (evil-leader/set-key "f" 'projectile-find-file)
 	    (evil-leader/set-key "1" 'delete-other-windows)
 	    (evil-leader/set-key "x" 'bookmark-jump)
 	    (evil-leader/set-key "0" 'delete-window)
@@ -183,8 +198,8 @@
 	    (evil-leader/set-key "g" 'magit-status)
 	    (evil-leader/set-key "n" 'windmove-left)
 	    (evil-leader/set-key "m" 'windmove-right)
-	    (evil-leader/set-key "<SPC>" 'windmove-down)
 	    (evil-leader/set-key "p" 'windmove-up)
+	    (evil-leader/set-key "<SPC>" 'windmove-down)
 	    (evil-leader/set-key "k" 'kill-this-buffer)))
 
 (use-package key-chord
@@ -1003,7 +1018,7 @@
   (use-package virtualenv
     :ensure)
   (let ((virtualenv-workon-starts-python nil))
-    (virtualenv-workon "sph3"))
+    (virtualenv-workon "py3"))
   (delete `elpy-module-highlight-indentation elpy-modules)
 #+END_SRC
 
@@ -1147,7 +1162,17 @@
 (add-hook 'text-mode-hook 'flyspell-mode)
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   #+END_SRC
-* Tips in Ubuntu
+
+* Ubuntu
+** Python virtualenv
+   #+BEGIN_EXAMPLE
+mkvirtualenv py3 --python='which python'
+mkvirtualenv py3 --python='which python'
+
+   #+END_EXAMPLE
+** SSH servers
+
+
 * Tips for emacs
 ** Painless way to install emacs
    #+BEGIN_EXAMPLE
@@ -1200,68 +1225,63 @@
    #+END_EXAMPLE
 
 
-* Save workspaces
+
+* Rust commands
+  #+BEGIN_EXAMPLE
+cargo test -- --nocapture
+  #+END_EXAMPLE
+  - Install rg, cargo-expand, bat
+
+
+* Rsync commands
+  To sync local laptop with lab computer (Dell laptop folder will change)
+  #+BEGIN_EXAMPLE
+  rsync -arvz --exclude={*_output, target} dinesh@10.101.97.164:home/dinesh/phd/ ~/phd/
+  #+END_EXAMPLE
+
+  To sync lab computer with laptop (LAB folder will change)
+  #+BEGIN_EXAMPLE
+  rsync -arvz --exclude={*_output, target} ~/phd/ dinesh@10.101.97.164:home/dinesh/phd/
+  #+END_EXAMPLE
+
+
+* Projectile
   #+BEGIN_SRC emacs-lisp
-(use-package perspective
-  :ensure t)
-;; activate perspective
-(persp-mode)
-;; Save workspaces upon emacs closing
-(defun perspectives-buffer-name-p (buffer)
-  (if (and buffer
-           (buffer-name buffer)
-           (not (string-prefix-p "*" (buffer-name buffer)))
-           (not (string-suffix-p "*" (buffer-name buffer))))
-      t
-    nil))
+(use-package projectile
+  :ensure t
+  :config
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (projectile-mode +1))
+  #+END_SRC
 
-(defun perspectives-hash-filter (current filtered parameters saving)
-  (let ((value (cdr current))
-	(result ())
-	(keys (hash-table-keys (cdr current))))
-    ;; for every perspective...
-    (dolist (key keys)
-      (let ((persp (gethash key value)))
-	;; that isn't killed...
-	(if (not (persp-killed persp))
-            (add-to-list
-             'result
-             (cons key
-		   ;; save the list of buffers
-		   (list (cons "buffers"
-			       (list
-				(mapcar 'buffer-name (seq-filter 'perspectives-buffer-name-p (persp-buffers persp)))))))))))
-    ;; return a different variable name so perspectives doesn't clobber it
-    (cons 'perspectives-hash-serialized result)))
 
-;; serialize perspectives hash
-(add-to-list 'frameset-filter-alist '(perspectives-hash . perspectives-hash-filter))
-;; don't serialize anything else
-(add-to-list 'frameset-filter-alist '(persp-modestring . :never))
-(add-to-list 'frameset-filter-alist '(persp-recursive . :never))
-(add-to-list 'frameset-filter-alist '(persp-last . :never))
-(add-to-list 'frameset-filter-alist '(persp-curr . :never))
+* Neo tree
+  #+BEGIN_SRC emacs-lisp
+;; (use-package neotree
+;;   :ensure t)
+;; (global-set-key [f8] 'neotree-toggle)
+  #+END_SRC
 
-(defun perspectives-restore-state ()
-  (dolist (frame (frame-list))
-    ;; get the serialized state off of the frame
-    (let ((state (frame-parameter frame 'perspectives-hash-serialized)))
-      (if state (progn
-		  (message "Found state, attempting restore")
-		  ;; delete it so we don't end up in a loop
-		  (set-frame-parameter frame 'perspectives-hash-serialized nil)
-		  (with-selected-frame frame
-		    (dolist (elem state)
-		      ;; recreate the perspective
-		      (with-perspective (car elem)
-					(dolist (buffer-name (car (cdr (assoc "buffers" (cdr elem)))))
-					  ;; add the buffer back to the perspective
-					  (persp-add-buffer buffer-name)
-					  )))
-		    ))
-	(message "No state found")
-	)
-      )))
 
-(add-hook 'desktop-after-read-hook 'perspectives-restore-state)
+* Disable mouse
+  #+BEGIN_SRC emacs-lisp
+(mouse-wheel-mode -1)
+(define-key evil-motion-state-map [down-mouse-1] 'ignore)
+(define-key evil-motion-state-map [mouse-1] 'ignore)
+(define-key evil-normal-state-map [down-mouse-1] 'ignore)
+(define-key evil-normal-state-map [mouse-1] 'ignore)
+(define-key evil-visual-state-map [down-mouse-1] 'ignore)
+(define-key evil-visual-state-map [mouse-1] 'ignore)
+(define-key evil-insert-state-map [down-mouse-1] 'ignore)
+(define-key evil-insert-state-map [mouse-1] 'ignore)
+
+(define-key evil-motion-state-map [down-mouse-2] 'ignore)
+(define-key evil-motion-state-map [mouse-2] 'ignore)
+(define-key evil-normal-state-map [down-mouse-2] 'ignore)
+(define-key evil-normal-state-map [mouse-2] 'ignore)
+(define-key evil-visual-state-map [down-mouse-2] 'ignore)
+(define-key evil-visual-state-map [mouse-2] 'ignore)
+(define-key evil-insert-state-map [down-mouse-2] 'ignore)
+(define-key evil-insert-state-map [mouse-2] 'ignore)
   #+END_SRC
