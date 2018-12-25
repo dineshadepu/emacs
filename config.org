@@ -690,8 +690,9 @@
 ;;         ("M-." .  racer-find-definition)
 ;;         )
 ;;   :config
-;;   (add-hook 'rust-mode-hook #'racer-mode)
-;;   (add-hook 'racer-mode-hook #'eldoc-mode))
+;; (add-hook 'racer-mode-hook #'eldoc-mode)
+;; (add-hook 'rust-mode-hook #'racer-mode)
+;; )
 
 ;; (setq racer-cmd "~/.cargo/bin/racer")
 ;; (setq racer-rust-src-path "~/.multirust/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
@@ -700,20 +701,20 @@
 ;; (add-hook 'racer-mode-hook #'eldoc-mode)
 ;; (add-hook 'racer-mode-hook #'company-mode)
 
-(require 'rust-mode)
-(define-key rust-mode-map (kbd "TAB")  #'company-indent-or-complete-common)
-(setq company-tooltip-align-annotations t)
+;; (require 'rust-mode)
+;; (define-key rust-mode-map (kbd "TAB")  #'company-indent-or-complete-common)
+;; (setq company-tooltip-align-annotations t)
 
 
 
-(use-package flycheck-rust
-  :ensure t
-  :defer t
-  :init (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+;; (use-package flycheck-rust
+;;   :ensure t
+;;   :defer t
+;;   :init (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
-(use-package flycheck-package
-  :ensure t
-  :init (with-eval-after-load 'flycheck (flycheck-package-setup)))
+;; (use-package flycheck-package
+;;   :ensure t
+;;   :init (with-eval-after-load 'flycheck (flycheck-package-setup)))
 
 (use-package toml-mode
   :ensure t)
@@ -731,10 +732,10 @@
   :diminish t)
 
 ;; snippets
-(add-to-list 'load-path "/home/dinesh/.emacs.d/elpa/rust-snippets/")
-(autoload 'rust-snippets/initialize "rust-snippets")
-(eval-after-load 'yasnippet
-  '(rust-snippets/initialize))
+;; (add-to-list 'load-path "/home/dinesh/.emacs.d/elpa/rust-snippets/")
+;; (autoload 'rust-snippets/initialize "rust-snippets")
+;; (eval-after-load 'yasnippet
+;;   '(rust-snippets/initialize))
 
 (use-package rust-playground
   :ensure t
@@ -839,10 +840,14 @@
 
 * flycheck
   #+BEGIN_SRC emacs-lisp
-    (use-package flycheck
-      :ensure t
-      :init
-      (global-flycheck-mode t))
+(use-package flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode t))
+(use-package flycheck-inline
+  :ensure t
+  :init
+  (global-flycheck-inline-mode))
   #+END_SRC
 
 
@@ -1171,6 +1176,12 @@ mkvirtualenv py3 --python='which python'
 
    #+END_EXAMPLE
 ** SSH servers
+** Latex installation
+   #+BEGIN_EXAMPLE
+sudo apt-get -y install texlive-latex-recommended texlive-pictures texlive-latex-extra
+   #+END_EXAMPLE
+
+
 
 
 * Tips for emacs
@@ -1267,21 +1278,84 @@ cargo test -- --nocapture
 * Disable mouse
   #+BEGIN_SRC emacs-lisp
 (mouse-wheel-mode -1)
-(define-key evil-motion-state-map [down-mouse-1] 'ignore)
-(define-key evil-motion-state-map [mouse-1] 'ignore)
-(define-key evil-normal-state-map [down-mouse-1] 'ignore)
-(define-key evil-normal-state-map [mouse-1] 'ignore)
-(define-key evil-visual-state-map [down-mouse-1] 'ignore)
-(define-key evil-visual-state-map [mouse-1] 'ignore)
-(define-key evil-insert-state-map [down-mouse-1] 'ignore)
-(define-key evil-insert-state-map [mouse-1] 'ignore)
 
-(define-key evil-motion-state-map [down-mouse-2] 'ignore)
-(define-key evil-motion-state-map [mouse-2] 'ignore)
+(define-key evil-normal-state-map [down-mouse-1] 'ignore)
 (define-key evil-normal-state-map [down-mouse-2] 'ignore)
+(define-key evil-normal-state-map [down-mouse-3] 'ignore)
+(define-key evil-normal-state-map [mouse-1] 'ignore)
 (define-key evil-normal-state-map [mouse-2] 'ignore)
+(define-key evil-normal-state-map [mouse-3] 'ignore)
+(define-key evil-normal-state-map [mouse-4] 'ignore)
+(define-key evil-normal-state-map [mouse-5] 'ignore)
+(define-key evil-normal-state-map [mouse-6] 'ignore)
+(define-key evil-normal-state-map [mouse-7] 'ignore)
+(define-key evil-normal-state-map [C-down-mouse-1] 'ignore)
+(define-key evil-normal-state-map [C-down-mouse-2] 'ignore)
+(define-key evil-normal-state-map [C-down-mouse-3] 'ignore)
+(define-key evil-normal-state-map [C-mouse-1] 'ignore)
+(define-key evil-normal-state-map [C-mouse-2] 'ignore)
+(define-key evil-normal-state-map [C-mouse-4] 'ignore)
+(define-key evil-normal-state-map [C-mouse-5] 'ignore)
+(define-key evil-normal-state-map [C-mouse-6] 'ignore)
+(define-key evil-normal-state-map [C-mouse-7] 'ignore)
+
+(define-key evil-visual-state-map [down-mouse-1] 'ignore)
 (define-key evil-visual-state-map [down-mouse-2] 'ignore)
+(define-key evil-visual-state-map [down-mouse-3] 'ignore)
+(define-key evil-visual-state-map [mouse-1] 'ignore)
 (define-key evil-visual-state-map [mouse-2] 'ignore)
+(define-key evil-visual-state-map [mouse-3] 'ignore)
+(define-key evil-visual-state-map [mouse-4] 'ignore)
+(define-key evil-visual-state-map [mouse-5] 'ignore)
+(define-key evil-visual-state-map [mouse-6] 'ignore)
+(define-key evil-visual-state-map [mouse-7] 'ignore)
+(define-key evil-visual-state-map [C-down-mouse-1] 'ignore)
+(define-key evil-visual-state-map [C-down-mouse-2] 'ignore)
+(define-key evil-visual-state-map [C-down-mouse-3] 'ignore)
+(define-key evil-visual-state-map [C-mouse-1] 'ignore)
+(define-key evil-visual-state-map [C-mouse-2] 'ignore)
+(define-key evil-visual-state-map [C-mouse-4] 'ignore)
+(define-key evil-visual-state-map [C-mouse-5] 'ignore)
+(define-key evil-visual-state-map [C-mouse-6] 'ignore)
+(define-key evil-visual-state-map [C-mouse-7] 'ignore)
+
+(define-key evil-motion-state-map [down-mouse-1] 'ignore)
+(define-key evil-motion-state-map [down-mouse-2] 'ignore)
+(define-key evil-motion-state-map [down-mouse-3] 'ignore)
+(define-key evil-motion-state-map [mouse-1] 'ignore)
+(define-key evil-motion-state-map [mouse-2] 'ignore)
+(define-key evil-motion-state-map [mouse-3] 'ignore)
+(define-key evil-motion-state-map [mouse-4] 'ignore)
+(define-key evil-motion-state-map [mouse-5] 'ignore)
+(define-key evil-motion-state-map [mouse-6] 'ignore)
+(define-key evil-motion-state-map [mouse-7] 'ignore)
+(define-key evil-motion-state-map [C-down-mouse-1] 'ignore)
+(define-key evil-motion-state-map [C-down-mouse-2] 'ignore)
+(define-key evil-motion-state-map [C-down-mouse-3] 'ignore)
+(define-key evil-motion-state-map [C-mouse-1] 'ignore)
+(define-key evil-motion-state-map [C-mouse-2] 'ignore)
+(define-key evil-motion-state-map [C-mouse-4] 'ignore)
+(define-key evil-motion-state-map [C-mouse-5] 'ignore)
+(define-key evil-motion-state-map [C-mouse-6] 'ignore)
+(define-key evil-motion-state-map [C-mouse-7] 'ignore)
+
+(define-key evil-insert-state-map [down-mouse-1] 'ignore)
 (define-key evil-insert-state-map [down-mouse-2] 'ignore)
+(define-key evil-insert-state-map [down-mouse-3] 'ignore)
+(define-key evil-insert-state-map [mouse-1] 'ignore)
 (define-key evil-insert-state-map [mouse-2] 'ignore)
+(define-key evil-insert-state-map [mouse-3] 'ignore)
+(define-key evil-insert-state-map [mouse-4] 'ignore)
+(define-key evil-insert-state-map [mouse-5] 'ignore)
+(define-key evil-insert-state-map [mouse-6] 'ignore)
+(define-key evil-insert-state-map [mouse-7] 'ignore)
+(define-key evil-insert-state-map [C-down-mouse-1] 'ignore)
+(define-key evil-insert-state-map [C-down-mouse-2] 'ignore)
+(define-key evil-insert-state-map [C-down-mouse-3] 'ignore)
+(define-key evil-insert-state-map [C-mouse-1] 'ignore)
+(define-key evil-insert-state-map [C-mouse-2] 'ignore)
+(define-key evil-insert-state-map [C-mouse-4] 'ignore)
+(define-key evil-insert-state-map [C-mouse-5] 'ignore)
+(define-key evil-insert-state-map [C-mouse-6] 'ignore)
+(define-key evil-insert-state-map [C-mouse-7] 'ignore)
   #+END_SRC
