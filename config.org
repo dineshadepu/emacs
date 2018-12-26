@@ -445,7 +445,7 @@
 
 
   (defun my/org-mode-defaults ()
-    (turn-on-org-cdlatex)
+    ;; (turn-on-org-cdlatex)
     ;; (diminish 'org-cdlatex-mode "")
     (turn-on-auto-fill)
 
@@ -1287,3 +1287,8 @@ cargo test -- --nocapture
             evil-visual-state-map
             evil-insert-state-map))
   #+END_SRC
+
+* Setup org latex preview
+#+BEGIN_SRC emacs-lisp
+(setq org-latex-create-formula-image-program 'dvipng)
+#+END_SRC
