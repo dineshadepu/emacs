@@ -200,6 +200,7 @@
 	    (evil-leader/set-key "m" 'windmove-right)
 	    (evil-leader/set-key "p" 'windmove-up)
 	    (evil-leader/set-key "<SPC>" 'windmove-down)
+	    (evil-leader/set-key "v" 'pdf-view-goto-page)
 	    (evil-leader/set-key "k" 'kill-this-buffer)))
 
 (use-package key-chord
@@ -331,15 +332,15 @@
 	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-(eval-after-load "org"
-  '(progn
-     ;; .txt files aren't in the list initially, but in case that changes
-     ;; in a future version of org, use if to avoid errors
-     (if (assoc "\\.txt\\'" org-file-apps)
-	 (setcdr (assoc "\\.txt\\'" org-file-apps) "notepad.exe %s")
-       (add-to-list 'org-file-apps '("\\.txt\\'" . "notepad.exe %s") t))
-     ;; Change .pdf association directly within the alist
-     (setcdr (assoc "\\.pdf\\'" org-file-apps) "evince %s")))
+;; (eval-after-load "org"
+;;   '(progn
+;;      ;; .txt files aren't in the list initially, but in case that changes
+;;      ;; in a future version of org, use if to avoid errors
+;;      (if (assoc "\\.txt\\'" org-file-apps)
+;; 	 (setcdr (assoc "\\.txt\\'" org-file-apps) "notepad.exe %s")
+;;        (add-to-list 'org-file-apps '("\\.txt\\'" . "notepad.exe %s") t))
+;;      ;; Change .pdf association directly within the alist
+;;      (setcdr (assoc "\\.pdf\\'" org-file-apps) "evince %s")))
 
 (use-package org-ref
   :ensure t
@@ -1291,4 +1292,21 @@ cargo test -- --nocapture
 * Setup org latex preview
 #+BEGIN_SRC emacs-lisp
 (setq org-latex-create-formula-image-program 'dvipng)
+(plist-put org-format-latex-options :scale 2.)
+#+END_SRC
+
+
+* Pdf tools
+#+BEGIN_SRC emacs-lisp
+(use-package pdf-tools
+  :pin manual ;; manually update
+  :config
+  ;; initialise
+  (pdf-tools-install)
+  ;; open pdfs scaled to fit page
+  (setq-default pdf-view-display-size 'fit-page)
+  ;; automatically annotate highlights
+  (setq pdf-annot-activate-created-annotations t)
+  ;; use normal isearch
+  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))
 #+END_SRC
