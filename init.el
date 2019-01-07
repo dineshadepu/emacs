@@ -1,30 +1,52 @@
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
+(setq ring-bell-function 'ignore
+      x-gtk-use-system-tooltips nil
+      use-dialog-box nil)
+(setq mouse-wheel-scroll-maount '(1)
+      mouse-wheel-progressive-speed nil
+      scroll-conservtively 101)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(unless (package-installed-p 'spacemacs-theme)
-  (package-refresh-contents)
-  (package-install 'spacemacs-theme))
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(blink-cursor-mode 0)
+(show-paren-mode 0)
 
-(add-to-list 'default-frame-alist '(background-color . "lightgray"))
-(org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
+(defalias 'yes-or-no-p 'y-or-n-p)
+(setq confirm-kill-process nil)
+
+(desktop-save-mode t)
+(save-place-mode t)
+
+(setq gnutls-verify-error t)
+(setq tls-checktrust t)
+(setq straight-use-package-by-default t)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; use-package
+(straight-use-package 'use-package)
+
+;;TODO put font functions
+(load (concat (expand-file-name user-emacs-directory) "config/lol.el"))
+(load (concat (expand-file-name user-emacs-directory) "config/fancification.el"))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(markdown-command "/usr/bin/pandoc" t)
- '(org-agenda-files
+ '(custom-safe-themes
    (quote
-    ("~/code_phd/prestige/README.org" "~/Dropbox/Research/todo.org")))
- '(package-selected-packages
-   (quote
-    (gtypist doom-modeline eyebrowse sage-shell-mode yasnippet-snippets writegood-mode which-key virtualenv vimrc-mode use-package toml-mode toc-org tiny spacemacs-theme spaceline smex smartparens rust-playground rg restart-emacs rainbow-delimiters racket-mode racer py-yapf ox-reveal org-ref org-pdfview org-bullets org-autolist ob-ipython nlinum-relative neotree monokai-theme magithub linum-relative irony-eldoc intellij-theme htmlize helm-swoop helm-make helm-fuzzier google-c-style golden-ratio git-timemachine git-gutter ggtags fzf flycheck-rust flycheck-package flycheck-irony flx-ido exec-path-from-shell evil-terminal-cursor-changer evil-nerd-commenter evil-magit evil-leader ess elpy elisp-slime-nav dired-details diminish dashboard counsel-gtags company-statistics company-math company-irony-c-headers company-irony company-c-headers company-auctex color-theme clang-format cdlatex cargo beacon basic-theme avy aggressive-indent))))
+    ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
