@@ -1,3 +1,22 @@
+;;; -*- lexical-binding: t -*-
+
+(defvar file-name-handler-alist-old file-name-handler-alist)
+
+;; Make startup faster
+(setq package-enable-at-startup nil
+      file-name-handler-alist nil
+      message-log-max 16384
+      gc-cons-threshold 402653184
+      gc-cons-percentage 0.6
+      auto-window-vscroll nil
+      package--init-file-ensured t)
+
+(add-hook 'after-init-hook
+          `(lambda ()
+             (setq file-name-handler-alist file-name-handler-alist-old
+                   gc-cons-threshold 800000
+                   gc-cons-percentage 0.1)) t)
+
 (setq ring-bell-function 'ignore
       x-gtk-use-system-tooltips nil
       use-dialog-box nil)
@@ -10,7 +29,7 @@
 (scroll-bar-mode -1)
 (blink-cursor-mode 0)
 (show-paren-mode 0)
-
+(column-number-mode t)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (setq confirm-kill-process nil)
 
@@ -39,17 +58,20 @@
 ;;TODO put font functions
 (load (concat (expand-file-name user-emacs-directory) "config/lol.el"))
 (load (concat (expand-file-name user-emacs-directory) "config/fancification.el"))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+
+;; Load all files from my ~/.emacs.d/config directory
+;; It doesn't support nested dirs
+(dolist
+    (file
+     (directory-files
+      (concat (expand-file-name user-emacs-directory) "config")
+      t
+      "^.[^#].+el$"))
+  (load-file file))
+
+;; Load automatically generated custom garbage
+(setq custom-file
+      (concat (file-name-directory user-init-file) "custom-variables.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
