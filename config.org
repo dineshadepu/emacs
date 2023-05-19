@@ -48,6 +48,11 @@
      (fset 'evil-visual-update-x-selection 'ignore)
      (setq temporary-file-directory "~/.emacs.d/tmp/")
 
+     ;; https://emacs.stackexchange.com/questions/23773/disable-scrollbar-on-new-frame
+     ;; remove scroll bar
+     (add-to-list 'default-frame-alist
+		  '(vertical-scroll-bars . nil))
+
      ;; kill all oher buffers
      (defun nuke-all-buffers ()
        (interactive)
@@ -278,16 +283,20 @@
     ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
     (eval-after-load 'git-timemachine
       '(progn
-         (evil-make-overriding-map git-timemachine-mode-map 'normal)
-         ;; force update evil keymaps after git-timemachine-mode loaded
-         (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps)))
+	 (evil-make-overriding-map git-timemachine-mode-map 'normal)
+	 ;; force update evil keymaps after git-timemachine-mode loaded
+	 (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps)))
 
     (use-package git-timemachine
       :ensure t
       )
 
-    (use-package evil-magit
-      :ensure t)
+    ;; evil-magit is not available on melpa
+    ;; (use-package evil-magit
+    ;;   :ensure t)
+    ;; as an alternative one has to load it manually
+    (load-file "~/.emacs.d/evil-magit.el")
+    (require 'evil-magit)
   #+END_SRC
 
 * Dashboard
@@ -442,7 +451,7 @@
 	(helm-mode 1)
 	(set-face-attribute 'helm-selection nil
 			    )))
-    (global-set-key (kbd "M-x") #'helm-M-x)
+    ;; (global-set-key (kbd "M-x") #'helm-M-x)
     (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
     (global-set-key (kbd "C-x C-f") #'helm-find-files)
     (helm-mode 1)
